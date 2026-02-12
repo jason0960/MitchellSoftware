@@ -287,30 +287,57 @@
     });
 
     // ============================================
-    // Contact Form
+    // Contact Form — EmailJS Integration
     // ============================================
+    const EMAILJS_PUBLIC_KEY = 'ImyXAHd9l808uQoki';
+    const EMAILJS_SERVICE_ID = 'service_k5gog04';
+    const EMAILJS_TEMPLATE_ID = 'template_a2sf6bc';
+
+    // Initialize EmailJS
+    if (window.emailjs) {
+        emailjs.init(EMAILJS_PUBLIC_KEY);
+    }
+
     const form = $('#contactForm');
     if (form) {
         form.addEventListener('submit', (e) => {
             e.preventDefault();
             const btn = form.querySelector('.btn-primary');
             const origHTML = btn.innerHTML;
-            const data = new FormData(form);
 
-            console.log('Contact submission:', {
-                name: data.get('name'),
-                email: data.get('email'),
-                message: data.get('message')
-            });
+            // Disable button while sending
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
 
-            btn.innerHTML = '<i class="fas fa-check"></i> Sent!';
-            btn.style.background = '#28c840';
-            form.reset();
+            const templateParams = {
+                from_name: form.querySelector('#name').value,
+                from_email: form.querySelector('#email').value,
+                message: form.querySelector('#message').value
+            };
 
-            setTimeout(() => {
-                btn.innerHTML = origHTML;
-                btn.style.background = '';
-            }, 3000);
+            emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
+                .then(() => {
+                    btn.innerHTML = '<i class="fas fa-check"></i> Sent!';
+                    btn.style.background = '#28c840';
+                    form.reset();
+
+                    setTimeout(() => {
+                        btn.innerHTML = origHTML;
+                        btn.style.background = '';
+                        btn.disabled = false;
+                    }, 3000);
+                })
+                .catch((error) => {
+                    console.error('EmailJS error:', error);
+                    btn.innerHTML = '<i class="fas fa-times"></i> Failed';
+                    btn.style.background = '#ef4444';
+
+                    setTimeout(() => {
+                        btn.innerHTML = origHTML;
+                        btn.style.background = '';
+                        btn.disabled = false;
+                    }, 3000);
+                });
         });
     }
 
