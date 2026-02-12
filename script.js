@@ -1,192 +1,337 @@
-// Mobile Navigation Toggle
-const hamburger = document.querySelector('.hamburger');
-const navMenu = document.querySelector('.nav-menu');
+/* ============================================
+   Jason Mitchell Portfolio — Script
+   State-driven mode system with props
+   ============================================ */
 
-if (hamburger && navMenu) {
-    hamburger.addEventListener('click', () => {
-        navMenu.classList.toggle('active');
-        
-        // Animate hamburger icon
-        const spans = hamburger.querySelectorAll('span');
-        if (navMenu.classList.contains('active')) {
-            spans[0].style.transform = 'rotate(45deg) translate(5px, 5px)';
-            spans[1].style.opacity = '0';
-            spans[2].style.transform = 'rotate(-45deg) translate(7px, -6px)';
-        } else {
-            spans[0].style.transform = 'none';
-            spans[1].style.opacity = '1';
-            spans[2].style.transform = 'none';
+(function () {
+    'use strict';
+
+    // ---------- Helpers ----------
+    const $ = (sel, ctx = document) => ctx.querySelector(sel);
+    const $$ = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
+
+    // ============================================
+    // State Manager — reactive state with props
+    // ============================================
+    const AppState = {
+        _state: {
+            mode: 'creative',       // 'creative' | 'professional'
+            scrolled: false,
+            mobileMenuOpen: false,
+            activeSection: 'home',
+            typingActive: true
+        },
+
+        _subscribers: [],
+
+        // Props — derived values computed from state
+        get props() {
+            const s = this._state;
+            return Object.freeze({
+                mode: s.mode,
+                isCreative: s.mode === 'creative',
+                isProfessional: s.mode === 'professional',
+                scrolled: s.scrolled,
+                mobileMenuOpen: s.mobileMenuOpen,
+                activeSection: s.activeSection,
+                typingActive: s.typingActive && s.mode === 'creative',
+                modeLabel: s.mode === 'creative' ? 'Creative' : 'Professional',
+                bodyClass: s.mode === 'professional' ? 'professional' : ''
+            });
+        },
+
+        // Get raw state value
+        get(key) {
+            return this._state[key];
+        },
+
+        // Update state and notify subscribers
+        setState(updates) {
+            const prev = { ...this._state };
+            let changed = false;
+
+            for (const [key, value] of Object.entries(updates)) {
+                if (this._state[key] !== value) {
+                    this._state[key] = value;
+                    changed = true;
+                }
+            }
+
+            if (changed) {
+                const props = this.props;
+                const changedKeys = Object.keys(updates).filter(k => prev[k] !== this._state[k]);
+                this._subscribers.forEach(fn => fn(props, changedKeys));
+            }
+        },
+
+        // Subscribe to state changes
+        subscribe(fn) {
+            this._subscribers.push(fn);
+            return () => {
+                this._subscribers = this._subscribers.filter(s => s !== fn);
+            };
+        },
+
+        // Toggle a boolean state value
+        toggle(key) {
+            this.setState({ [key]: !this._state[key] });
         }
-    });
-}
+    };
 
-// Close mobile menu when clicking on a link
-if (hamburger && navMenu) {
-    document.querySelectorAll('.nav-menu a').forEach(link => {
-        link.addEventListener('click', () => {
-            navMenu.classList.remove('active');
-            const spans = hamburger.querySelectorAll('span');
-            spans[0].style.transform = 'none';
-            spans[1].style.opacity = '1';
-            spans[2].style.transform = 'none';
-        });
-    });
-}
+    // ============================================
+    // Renderers — subscribe to state, update DOM
+    // ============================================
 
-// Smooth scrolling for navigation links
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-            const offset = 80; // Account for fixed navbar
-            const targetPosition = target.offsetTop - offset;
-            window.scrollTo({
-                top: targetPosition,
-                behavior: 'smooth'
+    // --- Mode Renderer ---
+    function renderMode(props, changed) {
+        if (!changed.includes('mode')) return;
+
+        // Update body class
+        document.body.classList.toggle('professional', props.isProfessional);
+
+        // Update toggle label
+        const label = $('#modeLabel');
+        if (label) label.textContent = props.modeLabel;
+
+        // Swap hero button content
+        const heroBtn = $('#heroBtn');
+        if (heroBtn) {
+            if (props.isProfessional) {
+                heroBtn.innerHTML = '<i class="fas fa-briefcase"></i> View Experience';
+            } else {
+                heroBtn.innerHTML = '<i class="fas fa-terminal"></i> View My Work';
+            }
+        }
+
+        // Persist preference
+        localStorage.setItem('jm-portfolio-mode', props.mode);
+    }
+
+    // --- Navbar Renderer ---
+    function renderNavbar(props, changed) {
+        if (changed.includes('scrolled')) {
+            const navbar = $('nav.navbar');
+            if (navbar) navbar.classList.toggle('scrolled', props.scrolled);
+        }
+
+        if (changed.includes('activeSection')) {
+            $$('.nav-link').forEach(link => {
+                link.classList.toggle('active',
+                    link.getAttribute('href') === '#' + props.activeSection
+                );
             });
         }
-    });
-});
 
-// Utility function for throttling
-function throttle(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
-            clearTimeout(timeout);
-            func(...args);
-        };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
-}
-
-// Combined scroll handler for better performance
-const handleScroll = throttle(() => {
-    const navbar = document.querySelector('.navbar');
-    const hero = document.querySelector('.hero');
-    const sections = document.querySelectorAll('section[id]');
-    const navLinks = document.querySelectorAll('.nav-menu a');
-    
-    // Navbar background on scroll
-    if (navbar) {
-        if (window.scrollY > 50) {
-            navbar.style.backgroundColor = 'rgba(255, 255, 255, 0.98)';
-            navbar.style.boxShadow = '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)';
-        } else {
-            navbar.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
-            navbar.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)';
+        if (changed.includes('mobileMenuOpen')) {
+            const hamburger = $('#hamburger');
+            const navMenu = $('#navMenu');
+            if (hamburger) hamburger.classList.toggle('open', props.mobileMenuOpen);
+            if (navMenu) navMenu.classList.toggle('open', props.mobileMenuOpen);
         }
     }
-    
-    // Add active state to navigation based on scroll position
-    let current = '';
-    sections.forEach(section => {
-        const sectionTop = section.offsetTop;
-        if (window.pageYOffset >= sectionTop - 200) {
-            current = section.getAttribute('id');
+
+    // Subscribe renderers
+    AppState.subscribe(renderMode);
+    AppState.subscribe(renderNavbar);
+
+    // ============================================
+    // Typing Effect — controlled by state
+    // ============================================
+    const typedEl = $('#typedText');
+    let typingTimeout = null;
+
+    if (typedEl) {
+        const strings = [
+            'Software Engineer',
+            'Java & React Developer',
+            'Full Stack Engineer',
+            'Python Automation Builder',
+            'DevOps & CI/CD Contributor'
+        ];
+        let stringIndex = 0;
+        let charIndex = 0;
+        let deleting = false;
+        const typeSpeed = 80;
+        const deleteSpeed = 40;
+        const pauseEnd = 2000;
+        const pauseStart = 500;
+
+        function type() {
+            // Only run in creative mode
+            if (!AppState.props.typingActive) {
+                typingTimeout = setTimeout(type, 500);
+                return;
+            }
+
+            const current = strings[stringIndex];
+            if (!deleting) {
+                typedEl.textContent = current.substring(0, charIndex + 1);
+                charIndex++;
+                if (charIndex === current.length) {
+                    typingTimeout = setTimeout(() => { deleting = true; type(); }, pauseEnd);
+                    return;
+                }
+            } else {
+                typedEl.textContent = current.substring(0, charIndex - 1);
+                charIndex--;
+                if (charIndex === 0) {
+                    deleting = false;
+                    stringIndex = (stringIndex + 1) % strings.length;
+                    typingTimeout = setTimeout(type, pauseStart);
+                    return;
+                }
+            }
+            typingTimeout = setTimeout(type, deleting ? deleteSpeed : typeSpeed);
         }
-    });
-    
-    navLinks.forEach(link => {
-        link.classList.remove('active');
-        if (link.getAttribute('href') === `#${current}`) {
-            link.classList.add('active');
-        }
-    });
-    
-    // Add parallax effect to hero section
-    if (hero) {
-        const scrolled = window.pageYOffset;
-        const rate = scrolled * 0.5;
-        hero.style.transform = `translateY(${rate}px)`;
+
+        setTimeout(type, 1000);
     }
-}, 100);
 
-// Single scroll event listener
-window.addEventListener('scroll', handleScroll);
+    // ============================================
+    // Cursor Glow — only in creative mode
+    // ============================================
+    const glow = $('#cursorGlow');
+    if (glow) {
+        document.addEventListener('mousemove', (e) => {
+            if (AppState.props.isCreative) {
+                glow.style.left = e.clientX + 'px';
+                glow.style.top = e.clientY + 'px';
+            }
+        });
+    }
 
-// Intersection Observer for scroll animations
-const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -100px 0px'
-};
+    // ============================================
+    // Event Handlers — dispatch state updates
+    // ============================================
 
-const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.style.opacity = '1';
-            entry.target.style.transform = 'translateY(0)';
+    // --- Scroll Handler ---
+    let scrollTicking = false;
+    window.addEventListener('scroll', () => {
+        if (!scrollTicking) {
+            requestAnimationFrame(() => {
+                const y = window.scrollY;
+                const sections = $$('section[id]');
+                let current = 'home';
+
+                sections.forEach(section => {
+                    if (y >= section.offsetTop - 200) {
+                        current = section.id;
+                    }
+                });
+
+                AppState.setState({
+                    scrolled: y > 40,
+                    activeSection: current
+                });
+
+                scrollTicking = false;
+            });
+            scrollTicking = true;
         }
     });
-}, observerOptions);
 
-// Observe all sections and cards
-document.querySelectorAll('section, .project-card, .skill-category, .stat').forEach(el => {
-    el.style.opacity = '0';
-    el.style.transform = 'translateY(30px)';
-    el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-    observer.observe(el);
-});
+    // --- Mode Toggle ---
+    const toggleBtn = $('#modeToggle');
+    if (toggleBtn) {
+        toggleBtn.addEventListener('click', () => {
+            const next = AppState.props.isCreative ? 'professional' : 'creative';
+            AppState.setState({ mode: next });
+        });
+    }
 
-// Contact form handling
-const contactForm = document.getElementById('contactForm');
-if (contactForm) {
-    contactForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        
-        const formData = new FormData(contactForm);
-        const name = formData.get('name');
-        const email = formData.get('email');
-        const message = formData.get('message');
-        
-        // In a real application, you would send this data to a server
-        console.log('Form submitted:', { name, email, message });
-        
-        // Show success message with better UX
-        const button = contactForm.querySelector('button[type="submit"]');
-        const originalText = button.textContent;
-        button.textContent = 'Message Sent! ✓';
-        button.style.backgroundColor = '#10b981';
-        
-        // Reset form
-        contactForm.reset();
-        
-        // Reset button after 3 seconds
-        setTimeout(() => {
-            button.textContent = originalText;
-            button.style.backgroundColor = '';
-        }, 3000);
+    // --- Mobile Menu ---
+    const hamburger = $('#hamburger');
+    const navMenu = $('#navMenu');
+
+    if (hamburger && navMenu) {
+        hamburger.addEventListener('click', () => {
+            AppState.toggle('mobileMenuOpen');
+        });
+
+        $$('.nav-link', navMenu).forEach(link => {
+            link.addEventListener('click', () => {
+                AppState.setState({ mobileMenuOpen: false });
+            });
+        });
+    }
+
+    // --- Smooth Scroll ---
+    $$('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = $(this.getAttribute('href'));
+            if (target) {
+                window.scrollTo({
+                    top: target.offsetTop - 80,
+                    behavior: 'smooth'
+                });
+            }
+        });
     });
-}
 
-// Add typing effect to hero subtitle (optional enhancement)
-function typeWriter(element, text, speed = 100) {
-    let i = 0;
-    element.textContent = '';
-    
-    function type() {
-        if (i < text.length) {
-            element.textContent += text.charAt(i);
-            i++;
-            setTimeout(type, speed);
-        }
+    // ============================================
+    // Intersection Observer Reveals
+    // ============================================
+    const revealObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('visible');
+                revealObserver.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+    $$('.reveal').forEach((el, i) => {
+        el.style.transitionDelay = (i * 0.08) + 's';
+        revealObserver.observe(el);
+    });
+
+    // ============================================
+    // Contact Form
+    // ============================================
+    const form = $('#contactForm');
+    if (form) {
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const btn = form.querySelector('.btn-primary');
+            const origHTML = btn.innerHTML;
+            const data = new FormData(form);
+
+            console.log('Contact submission:', {
+                name: data.get('name'),
+                email: data.get('email'),
+                message: data.get('message')
+            });
+
+            btn.innerHTML = '<i class="fas fa-check"></i> Sent!';
+            btn.style.background = '#28c840';
+            form.reset();
+
+            setTimeout(() => {
+                btn.innerHTML = origHTML;
+                btn.style.background = '';
+            }, 3000);
+        });
     }
-    
-    type();
-}
 
-// Activate typing effect when page loads
-window.addEventListener('load', () => {
-    const heroSubtitle = document.querySelector('.hero-subtitle');
-    if (heroSubtitle) {
-        const originalText = heroSubtitle.textContent;
-        typeWriter(heroSubtitle, originalText, 50);
+    // ============================================
+    // Initialize — restore saved mode
+    // ============================================
+    const savedMode = localStorage.getItem('jm-portfolio-mode');
+    if (savedMode === 'professional' || savedMode === 'creative') {
+        AppState.setState({ mode: savedMode });
     }
-});
 
-// Console message for recruiters
-console.log('%c👋 Hey there!', 'font-size: 20px; font-weight: bold; color: #6366f1;');
-console.log('%cLooking at the code? I like your style! 🚀', 'font-size: 14px; color: #f59e0b;');
-console.log('%cFeel free to reach out if you want to work together!', 'font-size: 12px; color: #6b7280;');
+    // ============================================
+    // Console Signature
+    // ============================================
+    console.log(
+        '%c{ JM }',
+        'font-size: 28px; font-weight: 700; color: #F96302; font-family: monospace;'
+    );
+    console.log(
+        '%cJason Mitchell — Software Engineer @ The Home Depot',
+        'font-size: 12px; color: #7d8590; font-family: system-ui;'
+    );
+
+})();

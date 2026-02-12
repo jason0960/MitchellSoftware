@@ -3,24 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Jason Mitchell - Full Stack Software Engineer & Freelance Developer">
-    <title>Jason Mitchell - Software Engineer</title>
+    <meta name="description" content="Jason Mitchell - Software Engineer | Enterprise Java, React & Python | The Home Depot">
+    <title>Jason Mitchell | Software Engineer</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- Cursor glow effect -->
+    <div class="cursor-glow" id="cursorGlow"></div>
+
     <!-- Navigation -->
     <nav class="navbar">
         <div class="container">
-            <div class="nav-brand">Jason Mitchell</div>
-            <ul class="nav-menu">
-                <li><a href="#home">Home</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#skills">Skills</a></li>
-                <li><a href="#projects">Projects</a></li>
-                <li><a href="#contact">Contact</a></li>
+            <div class="nav-brand">
+                <span class="brand-bracket">{</span> JM <span class="brand-bracket">}</span>
+            </div>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="#home" class="nav-link">Home</a></li>
+                <li><a href="#journey" class="nav-link">Journey</a></li>
+                <li><a href="#work" class="nav-link">Work</a></li>
+                <li><a href="#skills" class="nav-link">Skills</a></li>
+                <li><a href="#contact" class="nav-link">Contact</a></li>
             </ul>
-            <div class="hamburger">
+            <button class="mode-toggle" id="modeToggle" aria-label="Switch display mode">
+                <span class="mode-toggle-track">
+                    <span class="mode-toggle-thumb"></span>
+                </span>
+                <span class="mode-toggle-label" id="modeLabel">Creative</span>
+            </button>
+            <div class="hamburger" id="hamburger">
                 <span></span>
                 <span></span>
                 <span></span>
@@ -30,47 +44,189 @@
 
     <!-- Hero Section -->
     <section id="home" class="hero">
+        <div class="hero-grid-bg"></div>
         <div class="hero-content">
-            <h1 class="hero-title">Hi, I'm <span class="highlight">Jason Mitchell</span></h1>
-            <p class="hero-subtitle">Full Stack Software Engineer & Freelance Developer</p>
-            <p class="hero-description">Building elegant solutions to complex problems</p>
+
+            <!-- Creative Mode Hero -->
+            <div class="mode-content creative-only">
+                <div class="terminal-label">
+                    <span class="terminal-dot red"></span>
+                    <span class="terminal-dot yellow"></span>
+                    <span class="terminal-dot green"></span>
+                    <span class="terminal-text">jason@engineer ~ $</span>
+                </div>
+                <h1 class="hero-title">
+                    <span class="line-number">01</span> Jason Mitchell
+                </h1>
+                <p class="hero-subtitle">
+                    <span class="line-number">02</span> <span class="typed-text" id="typedText"></span><span class="cursor-blink">|</span>
+                </p>
+                <p class="hero-description">
+                    <span class="line-number">03</span> <span class="comment">// From bootcamp to building enterprise systems at scale</span>
+                </p>
+                <p class="hero-tagline">
+                    <span class="line-number">04</span> <span class="keyword">const</span> <span class="variable">focus</span> = <span class="string">"Inventory Planning & Replenishment"</span>;
+                </p>
+            </div>
+
+            <!-- Professional Mode Hero -->
+            <div class="mode-content professional-only">
+                <p class="pro-overline">The Home Depot &mdash; IPR HealthTech Systems</p>
+                <h1 class="hero-title pro-title">Jason Mitchell</h1>
+                <p class="pro-role">Software Engineer</p>
+                <p class="pro-summary">Enterprise software engineer specializing in Java, React, and Python solutions for Inventory Planning & Replenishment. Proven track record delivering production features, deployment automation, and monitoring systems at scale.</p>
+            </div>
+
             <div class="hero-buttons">
-                <a href="#projects" class="btn btn-primary">View Projects</a>
-                <a href="#contact" class="btn btn-secondary">Contact Me</a>
+                <a href="#work" class="btn btn-primary" id="heroBtn">
+                    <i class="fas fa-terminal"></i> View My Work
+                </a>
+                <a href="#contact" class="btn btn-outline">
+                    <i class="fas fa-paper-plane"></i> Get In Touch
+                </a>
             </div>
             <div class="social-links">
                 <a href="https://github.com/jason0960" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
-                <a href="https://linkedin.com" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
-                <a href="mailto:contact@jasonmitchell.dev" aria-label="Email"><i class="fas fa-envelope"></i></a>
+                <a href="https://www.linkedin.com/in/jason-mitchell-b39a4418b" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
+                <a href="mailto:jasonmitchell096@gmail.com" aria-label="Email"><i class="fas fa-envelope"></i></a>
             </div>
         </div>
         <div class="scroll-indicator">
-            <a href="#about"><i class="fas fa-chevron-down"></i></a>
+            <a href="#journey"><i class="fas fa-chevron-down"></i></a>
         </div>
     </section>
 
-    <!-- About Section -->
-    <section id="about" class="about">
+    <!-- Journey / Timeline Section -->
+    <section id="journey" class="journey">
         <div class="container">
-            <h2 class="section-title">About Me</h2>
-            <div class="about-content">
-                <div class="about-text">
-                    <p>I'm a passionate software engineer specializing in full-stack development with a focus on creating scalable, maintainable, and user-friendly applications.</p>
-                    <p>With expertise in modern web technologies and a commitment to clean code practices, I deliver high-quality solutions that meet business objectives and exceed user expectations.</p>
-                    <p>Available for freelance projects and full-time opportunities.</p>
-                    <div class="about-stats">
-                        <div class="stat">
-                            <h3>5+</h3>
-                            <p>Years Experience</p>
-                        </div>
-                        <div class="stat">
-                            <h3>50+</h3>
-                            <p>Projects Completed</p>
-                        </div>
-                        <div class="stat">
-                            <h3>100%</h3>
-                            <p>Client Satisfaction</p>
-                        </div>
+            <h2 class="section-title">
+                <span class="section-tag creative-only-inline">&lt;</span>Career Journey<span class="section-tag creative-only-inline">/&gt;</span>
+            </h2>
+            <p class="section-subtitle creative-only">My path from bootcamp to enterprise engineering at The Home Depot</p>
+            <p class="section-subtitle professional-only">Professional experience and career progression at The Home Depot</p>
+            <div class="timeline">
+                <div class="timeline-item" data-aos="fade-right">
+                    <div class="timeline-marker">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-badge bootcamp">Bootcamp</div>
+                        <h3>OMOW Software Engineering Bootcamp</h3>
+                        <p class="timeline-company"><i class="fas fa-building"></i> The Home Depot</p>
+                        <p>Intensive full-stack engineering program covering modern software development practices, enterprise architecture patterns, and collaborative engineering workflows.</p>
+                    </div>
+                </div>
+                <div class="timeline-item" data-aos="fade-left">
+                    <div class="timeline-marker">
+                        <i class="fas fa-laptop-code"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-badge internship">Internship</div>
+                        <h3>Software Engineering Intern</h3>
+                        <p class="timeline-company"><i class="fas fa-building"></i> The Home Depot</p>
+                        <p>Applied engineering fundamentals in a production environment, gaining hands-on experience with enterprise Java and React applications supporting supply chain operations.</p>
+                    </div>
+                </div>
+                <div class="timeline-item" data-aos="fade-right">
+                    <div class="timeline-marker active">
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <div class="timeline-content">
+                        <div class="timeline-badge fulltime">Full-Time SWE</div>
+                        <h3>Software Engineer</h3>
+                        <p class="timeline-company"><i class="fas fa-building"></i> The Home Depot &mdash; IPR HealthTech Systems</p>
+                        <p>Contributing to enterprise applications within Inventory Planning & Replenishment, delivering production features, bug fixes, deployment workflows, and monitoring solutions across backend and frontend systems.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Work / Contributions Section -->
+    <section id="work" class="work">
+        <div class="container">
+            <h2 class="section-title">
+                <span class="section-tag creative-only-inline">&lt;</span><span class="creative-only-inline">What I've Built</span><span class="professional-only-inline">Key Contributions</span><span class="section-tag creative-only-inline">/&gt;</span>
+            </h2>
+            <p class="section-subtitle creative-only">Enterprise contributions in Inventory Planning & Replenishment</p>
+            <p class="section-subtitle professional-only">Delivered measurable impact across enterprise applications and infrastructure</p>
+            <div class="work-grid">
+                <div class="work-card">
+                    <div class="work-card-icon">
+                        <i class="fab fa-java"></i>
+                        <i class="fab fa-react"></i>
+                    </div>
+                    <h3>Enterprise Applications</h3>
+                    <p>Contributed to enterprise Java and React applications supporting import container and replenishment workflows that power Home Depot's supply chain.</p>
+                    <div class="work-tags">
+                        <span>Java</span>
+                        <span>React</span>
+                        <span>REST APIs</span>
+                    </div>
+                </div>
+                <div class="work-card">
+                    <div class="work-card-icon">
+                        <i class="fab fa-python"></i>
+                        <i class="fas fa-file-pdf"></i>
+                    </div>
+                    <h3>PDF Automation Solution</h3>
+                    <p>Implemented a Python-based PDF generation solution to automate and standardize production container documentation, replacing manual processes.</p>
+                    <div class="work-tags">
+                        <span>Python</span>
+                        <span>Automation</span>
+                        <span>PDF Generation</span>
+                    </div>
+                </div>
+                <div class="work-card">
+                    <div class="work-card-icon">
+                        <i class="fas fa-code-branch"></i>
+                        <i class="fas fa-rocket"></i>
+                    </div>
+                    <h3>Deployment Workflows</h3>
+                    <p>Designed and created multiple production deployment workflows for legacy applications, improving release reliability and repeatability across the team.</p>
+                    <div class="work-tags">
+                        <span>CI/CD</span>
+                        <span>DevOps</span>
+                        <span>Legacy Systems</span>
+                    </div>
+                </div>
+                <div class="work-card">
+                    <div class="work-card-icon">
+                        <i class="fas fa-chart-line"></i>
+                        <i class="fas fa-heartbeat"></i>
+                    </div>
+                    <h3>Monitoring & Alerting</h3>
+                    <p>Designed and implemented application monitoring using Grafana, building dashboards to surface system health, failures, and operational metrics.</p>
+                    <div class="work-tags">
+                        <span>Grafana</span>
+                        <span>Dashboards</span>
+                        <span>Observability</span>
+                    </div>
+                </div>
+                <div class="work-card">
+                    <div class="work-card-icon">
+                        <i class="fas fa-bug"></i>
+                        <i class="fas fa-wrench"></i>
+                    </div>
+                    <h3>Production Bug Fixes</h3>
+                    <p>Delivered critical production bug fixes across backend and frontend systems in live environments, ensuring minimal downtime and service reliability.</p>
+                    <div class="work-tags">
+                        <span>Debugging</span>
+                        <span>Backend</span>
+                        <span>Frontend</span>
+                    </div>
+                </div>
+                <div class="work-card">
+                    <div class="work-card-icon">
+                        <i class="fas fa-shield-alt"></i>
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>KTLO & Incident Response</h3>
+                    <p>Supported keep-the-lights-on operations including incident triage, defect resolution, and deployment support in an Agile cross-functional environment.</p>
+                    <div class="work-tags">
+                        <span>Incident Triage</span>
+                        <span>Agile</span>
+                        <span>Collaboration</span>
                     </div>
                 </div>
             </div>
@@ -80,128 +236,55 @@
     <!-- Skills Section -->
     <section id="skills" class="skills">
         <div class="container">
-            <h2 class="section-title">Technical Skills</h2>
+            <h2 class="section-title">
+                <span class="section-tag creative-only-inline">&lt;</span><span class="creative-only-inline">Tech Stack</span><span class="professional-only-inline">Technical Proficiencies</span><span class="section-tag creative-only-inline">/&gt;</span>
+            </h2>
+            <p class="section-subtitle creative-only">Technologies and tools I work with daily</p>
+            <p class="section-subtitle professional-only">Core technologies and methodologies applied in enterprise environments</p>
             <div class="skills-grid">
-                <div class="skill-category">
-                    <div class="skill-icon"><i class="fas fa-code"></i></div>
-                    <h3>Frontend</h3>
-                    <ul>
-                        <li>HTML5 / CSS3 / JavaScript</li>
-                        <li>React / Vue / Angular</li>
-                        <li>TypeScript</li>
-                        <li>Responsive Design</li>
-                        <li>UI/UX Best Practices</li>
-                    </ul>
-                </div>
                 <div class="skill-category">
                     <div class="skill-icon"><i class="fas fa-server"></i></div>
                     <h3>Backend</h3>
                     <ul>
-                        <li>Node.js / Express</li>
-                        <li>Python / Django / Flask</li>
+                        <li>Java / Spring Boot</li>
+                        <li>Python</li>
                         <li>RESTful APIs</li>
-                        <li>GraphQL</li>
                         <li>Microservices</li>
+                        <li>Enterprise Architecture</li>
                     </ul>
                 </div>
                 <div class="skill-category">
-                    <div class="skill-icon"><i class="fas fa-database"></i></div>
-                    <h3>Database</h3>
+                    <div class="skill-icon"><i class="fas fa-code"></i></div>
+                    <h3>Frontend</h3>
                     <ul>
-                        <li>PostgreSQL / MySQL</li>
-                        <li>MongoDB</li>
-                        <li>Redis</li>
-                        <li>Database Design</li>
-                        <li>Query Optimization</li>
+                        <li>React</li>
+                        <li>JavaScript / TypeScript</li>
+                        <li>HTML5 / CSS3</li>
+                        <li>Responsive Design</li>
+                        <li>UI Component Libraries</li>
                     </ul>
                 </div>
                 <div class="skill-category">
                     <div class="skill-icon"><i class="fas fa-cloud"></i></div>
-                    <h3>DevOps & Tools</h3>
+                    <h3>DevOps & CI/CD</h3>
                     <ul>
-                        <li>Docker / Kubernetes</li>
-                        <li>AWS / Azure / GCP</li>
-                        <li>CI/CD Pipelines</li>
+                        <li>Deployment Pipelines</li>
                         <li>Git / GitHub</li>
-                        <li>Agile / Scrum</li>
+                        <li>Build Automation</li>
+                        <li>Release Management</li>
+                        <li>Legacy System Migration</li>
                     </ul>
                 </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Projects Section -->
-    <section id="projects" class="projects">
-        <div class="container">
-            <h2 class="section-title">Featured Projects</h2>
-            <div class="projects-grid">
-                <div class="project-card">
-                    <div class="project-image">
-                        <div class="project-overlay">
-                            <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i></a>
-                        </div>
-                    </div>
-                    <div class="project-info">
-                        <h3>E-Commerce Platform</h3>
-                        <p>Full-stack e-commerce solution with payment integration, inventory management, and admin dashboard.</p>
-                        <div class="project-tags">
-                            <span>React</span>
-                            <span>Node.js</span>
-                            <span>MongoDB</span>
-                            <span>Stripe</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="project-card">
-                    <div class="project-image">
-                        <div class="project-overlay">
-                            <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i></a>
-                        </div>
-                    </div>
-                    <div class="project-info">
-                        <h3>Task Management App</h3>
-                        <p>Collaborative task management tool with real-time updates, team collaboration, and analytics.</p>
-                        <div class="project-tags">
-                            <span>Vue.js</span>
-                            <span>Express</span>
-                            <span>PostgreSQL</span>
-                            <span>Socket.io</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="project-card">
-                    <div class="project-image">
-                        <div class="project-overlay">
-                            <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i></a>
-                        </div>
-                    </div>
-                    <div class="project-info">
-                        <h3>Analytics Dashboard</h3>
-                        <p>Real-time data visualization dashboard with custom charts, filters, and export capabilities.</p>
-                        <div class="project-tags">
-                            <span>React</span>
-                            <span>D3.js</span>
-                            <span>Python</span>
-                            <span>FastAPI</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="project-card">
-                    <div class="project-image">
-                        <div class="project-overlay">
-                            <a href="#" class="project-link"><i class="fas fa-external-link-alt"></i></a>
-                        </div>
-                    </div>
-                    <div class="project-info">
-                        <h3>Social Media API</h3>
-                        <p>RESTful API for social media platform with authentication, posts, comments, and real-time notifications.</p>
-                        <div class="project-tags">
-                            <span>Node.js</span>
-                            <span>Express</span>
-                            <span>MongoDB</span>
-                            <span>JWT</span>
-                        </div>
-                    </div>
+                <div class="skill-category">
+                    <div class="skill-icon"><i class="fas fa-chart-bar"></i></div>
+                    <h3>Observability & Tools</h3>
+                    <ul>
+                        <li>Grafana Dashboards</li>
+                        <li>Application Monitoring</li>
+                        <li>Alerting Systems</li>
+                        <li>Agile / Scrum</li>
+                        <li>Incident Management</li>
+                    </ul>
                 </div>
             </div>
         </div>
@@ -210,43 +293,51 @@
     <!-- Contact Section -->
     <section id="contact" class="contact">
         <div class="container">
-            <h2 class="section-title">Get In Touch</h2>
-            <p class="contact-subtitle">I'm currently available for freelance work and new opportunities</p>
+            <h2 class="section-title">
+                <span class="section-tag creative-only-inline">&lt;</span><span class="creative-only-inline">Let's Connect</span><span class="professional-only-inline">Contact</span><span class="section-tag creative-only-inline">/&gt;</span>
+            </h2>
+            <p class="section-subtitle creative-only">Open to new opportunities and collaboration</p>
+            <p class="section-subtitle professional-only">Available for professional inquiries and opportunities</p>
             <div class="contact-content">
                 <div class="contact-info">
-                    <div class="contact-item">
-                        <i class="fas fa-envelope"></i>
-                        <div>
+                    <div class="contact-card">
+                        <div class="contact-card-inner">
+                            <i class="fas fa-envelope"></i>
                             <h3>Email</h3>
-                            <a href="mailto:contact@jasonmitchell.dev">contact@jasonmitchell.dev</a>
+                            <a href="mailto:jasonmitchell096@gmail.com">jasonmitchell096@gmail.com</a>
                         </div>
                     </div>
-                    <div class="contact-item">
-                        <i class="fab fa-github"></i>
-                        <div>
+                    <div class="contact-card">
+                        <div class="contact-card-inner">
+                            <i class="fab fa-github"></i>
                             <h3>GitHub</h3>
                             <a href="https://github.com/jason0960" target="_blank">github.com/jason0960</a>
                         </div>
                     </div>
-                    <div class="contact-item">
-                        <i class="fab fa-linkedin"></i>
-                        <div>
+                    <div class="contact-card">
+                        <div class="contact-card-inner">
+                            <i class="fab fa-linkedin"></i>
                             <h3>LinkedIn</h3>
-                            <a href="https://linkedin.com" target="_blank">Connect on LinkedIn</a>
+                            <a href="https://www.linkedin.com/in/jason-mitchell-b39a4418b" target="_blank">linkedin.com/in/jason-mitchell</a>
                         </div>
                     </div>
                 </div>
                 <form class="contact-form" id="contactForm">
                     <div class="form-group">
+                        <label for="name">Name</label>
                         <input type="text" id="name" name="name" placeholder="Your Name" required>
                     </div>
                     <div class="form-group">
+                        <label for="email">Email</label>
                         <input type="email" id="email" name="email" placeholder="Your Email" required>
                     </div>
                     <div class="form-group">
+                        <label for="message">Message</label>
                         <textarea id="message" name="message" rows="5" placeholder="Your Message" required></textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary">Send Message</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane"></i> Send Message
+                    </button>
                 </form>
             </div>
         </div>
@@ -255,9 +346,17 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2026 Jason Mitchell. All rights reserved.</p>
-            <div class="footer-links">
-                <a href="#home">Back to Top</a>
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="brand-bracket">{</span> JM <span class="brand-bracket">}</span>
+                </div>
+                <p class="creative-only">&copy; 2026 Jason Mitchell. Built with purpose.</p>
+                <p class="professional-only">&copy; 2026 Jason Mitchell. All rights reserved.</p>
+                <div class="footer-links">
+                    <a href="https://github.com/jason0960" target="_blank"><i class="fab fa-github"></i></a>
+                    <a href="https://www.linkedin.com/in/jason-mitchell-b39a4418b" target="_blank"><i class="fab fa-linkedin"></i></a>
+                    <a href="mailto:jasonmitchell096@gmail.com"><i class="fas fa-envelope"></i></a>
+                </div>
             </div>
         </div>
     </footer>
