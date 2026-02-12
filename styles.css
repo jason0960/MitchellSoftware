@@ -1069,10 +1069,12 @@ body.professional .btn {
 
 body.professional .btn-primary {
     background: #1a4d8c;
+    color: #fff;
 }
 
 body.professional .btn-primary:hover {
     background: #15407a;
+    color: #fff;
     box-shadow: 0 4px 16px rgba(26, 77, 140, 0.25);
 }
 
