@@ -1,21 +1,13 @@
-/* ============================================
-   Jason Mitchell Portfolio — Script
-   State-driven mode system with props
-   ============================================ */
-
 (function () {
     'use strict';
 
-    // ---------- Helpers ----------
     const $ = (sel, ctx = document) => ctx.querySelector(sel);
     const $$ = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
 
-    // ============================================
-    // State Manager — reactive state with props
-    // ============================================
+    // State manager
     const AppState = {
         _state: {
-            mode: 'creative',       // 'creative' | 'professional'
+            mode: 'creative',
             scrolled: false,
             mobileMenuOpen: false,
             activeSection: 'home',
@@ -24,7 +16,6 @@
 
         _subscribers: [],
 
-        // Props — derived values computed from state
         get props() {
             const s = this._state;
             return Object.freeze({
@@ -40,12 +31,10 @@
             });
         },
 
-        // Get raw state value
         get(key) {
             return this._state[key];
         },
 
-        // Update state and notify subscribers
         setState(updates) {
             const prev = { ...this._state };
             let changed = false;
@@ -64,7 +53,6 @@
             }
         },
 
-        // Subscribe to state changes
         subscribe(fn) {
             this._subscribers.push(fn);
             return () => {
@@ -72,28 +60,20 @@
             };
         },
 
-        // Toggle a boolean state value
         toggle(key) {
             this.setState({ [key]: !this._state[key] });
         }
     };
 
-    // ============================================
-    // Renderers — subscribe to state, update DOM
-    // ============================================
-
-    // --- Mode Renderer ---
+    // Mode renderer — handles theme switching
     function renderMode(props, changed) {
         if (!changed.includes('mode')) return;
 
-        // Update body class
         document.body.classList.toggle('professional', props.isProfessional);
 
-        // Update toggle label
         const label = $('#modeLabel');
         if (label) label.textContent = props.modeLabel;
 
-        // Swap hero button content
         const heroBtn = $('#heroBtn');
         if (heroBtn) {
             if (props.isProfessional) {
@@ -103,11 +83,10 @@
             }
         }
 
-        // Persist preference
         localStorage.setItem('jm-portfolio-mode', props.mode);
     }
 
-    // --- Navbar Renderer ---
+    // Navbar renderer — scroll state + active link + mobile menu
     function renderNavbar(props, changed) {
         if (changed.includes('scrolled')) {
             const navbar = $('nav.navbar');
@@ -130,13 +109,10 @@
         }
     }
 
-    // Subscribe renderers
     AppState.subscribe(renderMode);
     AppState.subscribe(renderNavbar);
 
-    // ============================================
-    // Typing Effect — controlled by state
-    // ============================================
+    // Typing effect
     const typedEl = $('#typedText');
     let typingTimeout = null;
 
@@ -151,13 +127,8 @@
         let stringIndex = 0;
         let charIndex = 0;
         let deleting = false;
-        const typeSpeed = 80;
-        const deleteSpeed = 40;
-        const pauseEnd = 2000;
-        const pauseStart = 500;
 
         function type() {
-            // Only run in creative mode
             if (!AppState.props.typingActive) {
                 typingTimeout = setTimeout(type, 500);
                 return;
@@ -168,7 +139,7 @@
                 typedEl.textContent = current.substring(0, charIndex + 1);
                 charIndex++;
                 if (charIndex === current.length) {
-                    typingTimeout = setTimeout(() => { deleting = true; type(); }, pauseEnd);
+                    typingTimeout = setTimeout(() => { deleting = true; type(); }, 2000);
                     return;
                 }
             } else {
@@ -177,19 +148,17 @@
                 if (charIndex === 0) {
                     deleting = false;
                     stringIndex = (stringIndex + 1) % strings.length;
-                    typingTimeout = setTimeout(type, pauseStart);
+                    typingTimeout = setTimeout(type, 500);
                     return;
                 }
             }
-            typingTimeout = setTimeout(type, deleting ? deleteSpeed : typeSpeed);
+            typingTimeout = setTimeout(type, deleting ? 40 : 80);
         }
 
         setTimeout(type, 1000);
     }
 
-    // ============================================
-    // Cursor Glow — only in creative mode
-    // ============================================
+    // Cursor glow (creative mode only)
     const glow = $('#cursorGlow');
     if (glow) {
         document.addEventListener('mousemove', (e) => {
@@ -200,11 +169,7 @@
         });
     }
 
-    // ============================================
-    // Event Handlers — dispatch state updates
-    // ============================================
-
-    // --- Scroll Handler ---
+    // Scroll tracking
     let scrollTicking = false;
     window.addEventListener('scroll', () => {
         if (!scrollTicking) {
@@ -230,7 +195,7 @@
         }
     });
 
-    // --- Mode Toggle ---
+    // Mode toggle
     const toggleBtn = $('#modeToggle');
     if (toggleBtn) {
         toggleBtn.addEventListener('click', () => {
@@ -239,7 +204,7 @@
         });
     }
 
-    // --- Mobile Menu ---
+    // Mobile menu
     const hamburger = $('#hamburger');
     const navMenu = $('#navMenu');
 
@@ -255,7 +220,7 @@
         });
     }
 
-    // --- Smooth Scroll ---
+    // Smooth scroll
     $$('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();
@@ -269,9 +234,7 @@
         });
     });
 
-    // ============================================
-    // Intersection Observer Reveals
-    // ============================================
+    // Scroll reveal
     const revealObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -286,14 +249,11 @@
         revealObserver.observe(el);
     });
 
-    // ============================================
-    // Contact Form — EmailJS Integration
-    // ============================================
+    // EmailJS contact form
     const EMAILJS_PUBLIC_KEY = 'ImyXAHd9l808uQoki';
     const EMAILJS_SERVICE_ID = 'service_k5gog04';
     const EMAILJS_TEMPLATE_ID = 'template_a2sf6bc';
 
-    // Initialize EmailJS
     if (window.emailjs) {
         emailjs.init(EMAILJS_PUBLIC_KEY);
     }
@@ -305,7 +265,6 @@
             const btn = form.querySelector('.btn-primary');
             const origHTML = btn.innerHTML;
 
-            // Disable button while sending
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
 
@@ -341,17 +300,12 @@
         });
     }
 
-    // ============================================
-    // Initialize — restore saved mode
-    // ============================================
+    // Restore saved mode
     const savedMode = localStorage.getItem('jm-portfolio-mode');
     if (savedMode === 'professional' || savedMode === 'creative') {
         AppState.setState({ mode: savedMode });
     }
 
-    // ============================================
-    // Console Signature
-    // ============================================
     console.log(
         '%c{ JM }',
         'font-size: 28px; font-weight: 700; color: #F96302; font-family: monospace;'

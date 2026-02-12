@@ -1,8 +1,4 @@
-/* ============================================
-   Jason Mitchell Portfolio - Styles
-   ============================================ */
-
-/* --- CSS Variables --- */
+/* Variables */
 :root {
     --accent: #F96302;
     --accent-glow: rgba(249, 99, 2, 0.15);
@@ -26,7 +22,7 @@
     --syntax-comment: #546e7a;
 }
 
-/* --- Reset & Base --- */
+/* Reset */
 *, *::before, *::after {
     box-sizing: border-box;
     margin: 0;
@@ -68,7 +64,7 @@ a:hover {
     padding: 0 2rem;
 }
 
-/* --- Cursor Glow --- */
+/* Cursor glow */
 .cursor-glow {
     position: fixed;
     width: 600px;
@@ -86,7 +82,7 @@ body:hover .cursor-glow {
     opacity: 1;
 }
 
-/* --- Navigation --- */
+/* Nav */
 .navbar {
     position: fixed;
     top: 0;
@@ -186,7 +182,7 @@ body:hover .cursor-glow {
     transform: translateY(-7px) rotate(-45deg);
 }
 
-/* --- Hero Section --- */
+/* Hero */
 .hero {
     min-height: 100vh;
     display: flex;
@@ -366,7 +362,7 @@ body:hover .cursor-glow {
     50% { transform: translateX(-50%) translateY(10px); }
 }
 
-/* --- Section Styles --- */
+/* Sections */
 section {
     padding: 6rem 0;
 }
@@ -393,7 +389,7 @@ section {
     margin-bottom: 4rem;
 }
 
-/* --- Timeline --- */
+/* Timeline */
 .timeline {
     position: relative;
     max-width: 700px;
@@ -518,7 +514,7 @@ section {
     line-height: 1.6;
 }
 
-/* --- Work Grid --- */
+/* Work grid */
 .work-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
@@ -593,7 +589,7 @@ section {
     border: 1px solid rgba(249, 99, 2, 0.15);
 }
 
-/* --- Skills Grid --- */
+/* Skills */
 .skills {
     background: var(--bg-secondary);
 }
@@ -649,7 +645,7 @@ section {
     color: var(--text-primary);
 }
 
-/* --- Contact --- */
+/* Contact */
 .contact-content {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -744,7 +740,7 @@ section {
     align-self: flex-start;
 }
 
-/* --- Footer --- */
+/* Footer */
 .footer {
     border-top: 1px solid var(--border);
     padding: 2rem 0;
@@ -785,7 +781,7 @@ section {
     color: var(--accent);
 }
 
-/* --- Reveal animations --- */
+/* Reveal animations */
 .reveal {
     opacity: 0;
     transform: translateY(20px);
@@ -797,7 +793,7 @@ section {
     transform: translateY(0);
 }
 
-/* --- Responsive --- */
+/* Responsive */
 @media (max-width: 768px) {
     .hamburger {
         display: flex;
@@ -854,9 +850,7 @@ section {
     }
 }
 
-/* ============================================
-   Mode Toggle Button
-   ============================================ */
+/* Mode toggle */
 .mode-toggle {
     display: flex;
     align-items: center;
@@ -903,11 +897,8 @@ section {
     user-select: none;
 }
 
-/* ============================================
-   Mode Visibility Controls
-   ============================================ */
+/* Mode visibility */
 
-/* Creative mode content (default visible) */
 .professional-only {
     display: none;
 }
@@ -924,7 +915,7 @@ section {
     display: inline;
 }
 
-/* Professional mode overrides */
+/* Professional theme */
 body.professional .creative-only {
     display: none !important;
 }
@@ -941,11 +932,6 @@ body.professional .professional-only-inline {
     display: inline !important;
 }
 
-/* ============================================
-   Professional Mode Theme
-   ============================================ */
-
-/* Toggle button in professional mode */
 body.professional .mode-toggle-track {
     background: #1a4d8c;
     border-color: #2563eb;
@@ -957,7 +943,6 @@ body.professional .mode-toggle-thumb {
     box-shadow: 0 2px 6px rgba(37, 99, 235, 0.4);
 }
 
-/* Professional color scheme */
 body.professional {
     --accent: #1a4d8c;
     --accent-glow: rgba(26, 77, 140, 0.08);
@@ -979,7 +964,6 @@ body.professional {
     color: #1a1a2e;
 }
 
-/* Professional navbar */
 body.professional .navbar.scrolled {
     background: rgba(255, 255, 255, 0.92);
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
@@ -1007,7 +991,6 @@ body.professional .hamburger span {
     background: #1a1a2e;
 }
 
-/* Professional hero */
 body.professional .hero-grid-bg {
     background-image: none;
     background: linear-gradient(135deg, #f8f9fb 0%, #e8ecf4 100%);
@@ -1057,9 +1040,6 @@ body.professional .pro-summary {
     max-width: 560px;
 }
 
-/* Professional buttons keep same alignment */
-
-/* Professional buttons */
 body.professional .btn {
     font-family: var(--font-sans);
     font-weight: 600;
@@ -1088,7 +1068,6 @@ body.professional .btn-outline:hover {
     color: #fff;
 }
 
-/* Professional cards & sections */
 body.professional .work-card,
 body.professional .skill-category,
 body.professional .contact-card,
@@ -1123,7 +1102,6 @@ body.professional .skill-icon {
     color: #1a4d8c;
 }
 
-/* Professional timeline */
 body.professional .timeline::before {
     background: linear-gradient(to bottom, #1a4d8c, rgba(0, 0, 0, 0.08));
 }
@@ -1156,13 +1134,11 @@ body.professional .timeline-company i {
     color: #1a4d8c;
 }
 
-/* Professional section titles */
 body.professional .section-title {
     font-weight: 800;
     letter-spacing: -0.5px;
 }
 
-/* Professional form */
 body.professional .form-group label {
     font-family: var(--font-sans);
     font-weight: 600;
@@ -1183,12 +1159,10 @@ body.professional .form-group textarea:focus {
     box-shadow: 0 0 0 3px rgba(26, 77, 140, 0.1);
 }
 
-/* Professional contact card icons */
 body.professional .contact-card i {
     color: #1a4d8c;
 }
 
-/* Professional footer */
 body.professional .footer {
     background: #f8f9fb;
     border-top: 1px solid rgba(0, 0, 0, 0.06);
@@ -1202,12 +1176,10 @@ body.professional .footer-links a:hover {
     color: #1a4d8c;
 }
 
-/* Professional scroll indicator */
 body.professional .scroll-indicator a {
     color: #a0aec0;
 }
 
-/* Professional social links */
 body.professional .social-links a {
     color: #a0aec0;
 }
@@ -1216,7 +1188,6 @@ body.professional .social-links a:hover {
     color: #1a4d8c;
 }
 
-/* Professional link colors */
 body.professional a {
     color: #1a4d8c;
 }
@@ -1225,23 +1196,19 @@ body.professional a:hover {
     color: #15407a;
 }
 
-/* Professional cursor glow — hidden */
 body.professional .cursor-glow {
     display: none;
 }
 
-/* Professional selection */
 body.professional ::selection {
     background: #1a4d8c;
     color: #fff;
 }
 
-/* Professional skills section bg */
 body.professional .skills {
     background: #f1f3f7;
 }
 
-/* Professional mobile nav */
 @media (max-width: 768px) {
     body.professional .nav-menu {
         background: #ffffff;
@@ -1257,9 +1224,7 @@ body.professional .skills {
     }
 }
 
-/* ============================================
-   Mode Transition
-   ============================================ */
+/* Mode transitions */
 body {
     transition: background 0.5s ease, color 0.5s ease;
 }
