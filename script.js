@@ -149,6 +149,7 @@
         const annotations = $$('.wb-annotation[data-target]');
         const scrollY = window.scrollY;
         const vw = window.innerWidth;
+        const isMobile = vw <= 768;
 
         annotations.forEach(ann => {
             const targetId = ann.dataset.target;
@@ -161,6 +162,13 @@
             const centerX = absLeft + r.width / 2;
 
             ann.style.position = 'absolute';
+
+            if (isMobile) {
+                if (targetId === 'cursorGlow') return;
+                ann.style.left = Math.max(4, Math.min(centerX - (ann.offsetWidth || 200) * 0.375, vw - (ann.offsetWidth || 200) * 0.75 - 4)) + 'px';
+                ann.style.top = (absTop + r.height + 6) + 'px';
+                return;
+            }
 
             switch (targetId) {
                 // --- BELOW: arrow tip at top touches element bottom ---

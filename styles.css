@@ -212,7 +212,6 @@ body:hover .cursor-glow {
     position: relative;
     z-index: 1;
     max-width: 800px;
-    width: 100%;
 }
 
 .terminal-label {
@@ -367,8 +366,6 @@ body:hover .cursor-glow {
     font-family: var(--font-mono);
     font-size: 0.9rem;
     margin-bottom: 0.5rem;
-    overflow-wrap: break-word;
-    word-break: break-word;
 }
 
 .comment { color: var(--syntax-comment); }
@@ -976,11 +973,14 @@ section {
 
     .hero-content {
         max-width: 100%;
+        width: 100%;
         overflow: hidden;
     }
 
     .hero-description, .hero-tagline {
         font-size: 0.7rem;
+        overflow-wrap: break-word;
+        word-break: break-word;
     }
 
     .hero-subtitle {
@@ -1536,6 +1536,21 @@ body.whiteboard-on #whiteboardBtn {
 
 @media (max-width: 768px) {
     .wb-overlay {
-        display: none !important;
+        overflow: hidden;
+    }
+
+    .wb-annotation {
+        transform: scale(0.75);
+        transform-origin: top left;
+    }
+
+    .wb-label {
+        font-size: 0.9rem;
+        white-space: normal;
+        max-width: 55vw;
+    }
+
+    .wb-annotation[data-target="cursorGlow"] {
+        display: none;
     }
 }
