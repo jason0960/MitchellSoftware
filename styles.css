@@ -866,10 +866,21 @@ section {
 .btn-enjoyed:disabled{opacity:.6;cursor:not-allowed;transform:none;box-shadow:none}
 .btn-enjoyed.voted{background:#22c55e}
 
+.health-header{
+    font-family:var(--mono);font-size:.8rem;color:var(--muted);
+    display:flex;align-items:center;gap:.4rem;
+    margin-top:1rem;margin-bottom:.5rem;
+    border-top:1px solid var(--border);
+    padding-top:.8rem;
+}
+.health-header i{color:#22c55e}
+.health-stats .health-value{font-size:1rem;color:var(--muted)}
+
 @media(max-width:700px){
     .enjoyed-card{flex-direction:column;text-align:center;padding:1.2rem}
     .enjoyed-stats{justify-content:center}
     .enjoyed-left h3{justify-content:center}
+    .health-header{justify-content:center}
 }
 
 /* Footer */
