@@ -410,6 +410,7 @@ function bindEvents() {
     const canvas = renderer.domElement;
     canvas.addEventListener('mousemove', onMouseMove);
     canvas.addEventListener('click', onMouseClick);
+    canvas.addEventListener('touchend', onTouchTap, { passive: false });
     document.getElementById('generatePdfBtn').addEventListener('click', generatePdf);
     document.getElementById('clearCartBtn').addEventListener('click', clearSelection);
     document.getElementById('rotateLeftBtn').addEventListener('click', () => rotateCamera(-1));
@@ -471,6 +472,33 @@ function onMouseClick(e) {
         return;
     }
     toggleFlag(hoveredBunk);
+}
+
+function onTouchTap(e) {
+    if (!e.changedTouches || e.changedTouches.length === 0) return;
+    const touch = e.changedTouches[0];
+    const canvas = renderer.domElement;
+    const rect = canvas.getBoundingClientRect();
+    mouse.x = ((touch.clientX - rect.left) / rect.width) * 2 - 1;
+    mouse.y = -((touch.clientY - rect.top) / rect.height) * 2 + 1;
+
+    raycaster.setFromCamera(mouse, camera);
+    const meshes = [];
+    bunkData.forEach(b => { if (b.meshGroup) meshes.push(...b.meshGroup.children.filter(c => c.isMesh)); });
+    const intersects = raycaster.intersectObjects(meshes);
+
+    if (intersects.length > 0) {
+        const group = intersects[0].object.parent;
+        const idx = group.userData.bunkIndex;
+        if (idx !== undefined) {
+            const bunk = bunkData[idx];
+            if (bunk.current >= bunk.capacity) {
+                showStatus('That bunk is fully stocked — no restock needed!', 'error');
+                return;
+            }
+            toggleFlag(idx);
+        }
+    }
 }
 
 function toggleFlag(idx) {
