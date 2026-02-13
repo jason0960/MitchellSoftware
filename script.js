@@ -1,17 +1,26 @@
+/* ============================================
+   Jason Mitchell Portfolio — Script
+   State-driven mode system with props
+   ============================================ */
+
 (function () {
     'use strict';
 
+    // ---------- Helpers ----------
     const $ = (sel, ctx = document) => ctx.querySelector(sel);
     const $$ = (sel, ctx = document) => [...ctx.querySelectorAll(sel)];
 
-    // State manager
+    // ============================================
+    // State Manager — reactive state with props
+    // ============================================
     const AppState = {
         _state: {
             mode: 'creative',
             scrolled: false,
             mobileMenuOpen: false,
             activeSection: 'home',
-            typingActive: true
+            typingActive: true,
+            whiteboard: false
         },
 
         _subscribers: [],
@@ -26,6 +35,7 @@
                 mobileMenuOpen: s.mobileMenuOpen,
                 activeSection: s.activeSection,
                 typingActive: s.typingActive && s.mode === 'creative',
+                whiteboard: s.whiteboard && s.mode === 'creative',
                 modeLabel: s.mode === 'creative' ? 'Creative' : 'Professional',
                 bodyClass: s.mode === 'professional' ? 'professional' : ''
             });
@@ -65,11 +75,18 @@
         }
     };
 
-    // Mode renderer — handles theme switching
+    // ============================================
+    // Renderers
+    // ============================================
+
     function renderMode(props, changed) {
         if (!changed.includes('mode')) return;
 
         document.body.classList.toggle('professional', props.isProfessional);
+
+        if (props.isProfessional && AppState.get('whiteboard')) {
+            AppState.setState({ whiteboard: false });
+        }
 
         const label = $('#modeLabel');
         if (label) label.textContent = props.modeLabel;
@@ -86,7 +103,6 @@
         localStorage.setItem('jm-portfolio-mode', props.mode);
     }
 
-    // Navbar renderer — scroll state + active link + mobile menu
     function renderNavbar(props, changed) {
         if (changed.includes('scrolled')) {
             const navbar = $('nav.navbar');
@@ -99,6 +115,11 @@
                     link.getAttribute('href') === '#' + props.activeSection
                 );
             });
+            $$('.editor-tab').forEach(tab => {
+                tab.classList.toggle('active',
+                    tab.getAttribute('href') === '#' + props.activeSection
+                );
+            });
         }
 
         if (changed.includes('mobileMenuOpen')) {
@@ -109,8 +130,73 @@
         }
     }
 
+    function renderWhiteboard(props, changed) {
+        if (!changed.includes('whiteboard') && !changed.includes('mode')) return;
+
+        document.body.classList.toggle('whiteboard-on', props.whiteboard);
+
+        const btn = $('#whiteboardBtn');
+        if (btn) btn.classList.toggle('active', props.whiteboard);
+
+        if (props.whiteboard) {
+            requestAnimationFrame(positionAnnotations);
+        }
+    }
+
+    function positionAnnotations() {
+        const annotations = $$('.wb-annotation[data-target]');
+        annotations.forEach(ann => {
+            const targetId = ann.dataset.target;
+            const target = document.getElementById(targetId);
+            if (!target) return;
+
+            const r = target.getBoundingClientRect();
+
+            switch (targetId) {
+                case 'modeToggle':
+                    ann.style.left = (r.left + r.width / 2 - 60) + 'px';
+                    ann.style.top = (r.bottom + 10) + 'px';
+                    break;
+                case 'heroContent':
+                    ann.style.left = Math.max(12, r.left - 220) + 'px';
+                    ann.style.top = (r.top + r.height * 0.35) + 'px';
+                    break;
+                case 'editorTabs':
+                    ann.style.left = (r.left + r.width * 0.3) + 'px';
+                    ann.style.top = (r.top - 52) + 'px';
+                    break;
+                case 'typedText':
+                    ann.style.left = (r.right + 20) + 'px';
+                    ann.style.top = (r.top - 10) + 'px';
+                    break;
+                case 'heroTagline':
+                    ann.style.left = (r.right + 20) + 'px';
+                    ann.style.top = (r.top - 10) + 'px';
+                    break;
+                case 'whiteboardBtn':
+                    ann.style.left = (r.left + r.width / 2 - 50) + 'px';
+                    ann.style.top = (r.bottom + 10) + 'px';
+                    break;
+                case 'cursorGlow':
+                    ann.style.right = '2rem';
+                    ann.style.bottom = '5rem';
+                    ann.style.left = 'auto';
+                    ann.style.top = 'auto';
+                    break;
+            }
+        });
+    }
+
+    window.addEventListener('scroll', () => {
+        if (AppState.props.whiteboard) requestAnimationFrame(positionAnnotations);
+    });
+    window.addEventListener('resize', () => {
+        if (AppState.props.whiteboard) requestAnimationFrame(positionAnnotations);
+    });
+
     AppState.subscribe(renderMode);
     AppState.subscribe(renderNavbar);
+    AppState.subscribe(renderWhiteboard);
 
     // Typing effect
     const typedEl = $('#typedText');
@@ -127,6 +213,10 @@
         let stringIndex = 0;
         let charIndex = 0;
         let deleting = false;
+        const typeSpeed = 80;
+        const deleteSpeed = 40;
+        const pauseEnd = 2000;
+        const pauseStart = 500;
 
         function type() {
             if (!AppState.props.typingActive) {
@@ -139,7 +229,7 @@
                 typedEl.textContent = current.substring(0, charIndex + 1);
                 charIndex++;
                 if (charIndex === current.length) {
-                    typingTimeout = setTimeout(() => { deleting = true; type(); }, 2000);
+                    typingTimeout = setTimeout(() => { deleting = true; type(); }, pauseEnd);
                     return;
                 }
             } else {
@@ -148,11 +238,11 @@
                 if (charIndex === 0) {
                     deleting = false;
                     stringIndex = (stringIndex + 1) % strings.length;
-                    typingTimeout = setTimeout(type, 500);
+                    typingTimeout = setTimeout(type, pauseStart);
                     return;
                 }
             }
-            typingTimeout = setTimeout(type, deleting ? 40 : 80);
+            typingTimeout = setTimeout(type, deleting ? deleteSpeed : typeSpeed);
         }
 
         setTimeout(type, 1000);
@@ -204,6 +294,14 @@
         });
     }
 
+    // Whiteboard toggle
+    const wbBtn = $('#whiteboardBtn');
+    if (wbBtn) {
+        wbBtn.addEventListener('click', () => {
+            AppState.toggle('whiteboard');
+        });
+    }
+
     // Mobile menu
     const hamburger = $('#hamburger');
     const navMenu = $('#navMenu');
@@ -234,7 +332,7 @@
         });
     });
 
-    // Scroll reveal
+    // Reveal animations
     const revealObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -249,7 +347,7 @@
         revealObserver.observe(el);
     });
 
-    // EmailJS contact form
+    // EmailJS
     const EMAILJS_PUBLIC_KEY = 'ImyXAHd9l808uQoki';
     const EMAILJS_SERVICE_ID = 'service_k5gog04';
     const EMAILJS_TEMPLATE_ID = 'template_a2sf6bc';

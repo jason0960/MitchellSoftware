@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </head>
 <body>
@@ -45,11 +45,30 @@
         <div class="hero-grid-bg"></div>
         <div class="hero-content">
             <div class="mode-content creative-only">
-                <div class="terminal-label">
-                    <span class="terminal-dot red"></span>
-                    <span class="terminal-dot yellow"></span>
-                    <span class="terminal-dot green"></span>
-                    <span class="terminal-text">jason@engineer ~ $</span>
+                <div class="editor-window">
+                    <div class="editor-titlebar">
+                        <span class="terminal-dot red"></span>
+                        <span class="terminal-dot yellow"></span>
+                        <span class="terminal-dot green"></span>
+                        <span class="editor-title">jason@engineer</span>
+                    </div>
+                    <div class="editor-tabs" id="editorTabs">
+                        <a href="#home" class="editor-tab active" data-ext="jsx">
+                            <span class="file-dot"></span> index.jsx
+                        </a>
+                        <a href="#journey" class="editor-tab" data-ext="ts">
+                            <span class="file-dot"></span> journey.ts
+                        </a>
+                        <a href="#work" class="editor-tab" data-ext="py">
+                            <span class="file-dot"></span> work.py
+                        </a>
+                        <a href="#skills" class="editor-tab" data-ext="json">
+                            <span class="file-dot"></span> skills.json
+                        </a>
+                        <a href="#contact" class="editor-tab" data-ext="sh">
+                            <span class="file-dot"></span> contact.sh
+                        </a>
+                    </div>
                 </div>
                 <h1 class="hero-title">
                     <span class="line-number">01</span> Jason Mitchell
@@ -60,7 +79,7 @@
                 <p class="hero-description">
                     <span class="line-number">03</span> <span class="comment">// From bootcamp to building enterprise systems at scale</span>
                 </p>
-                <p class="hero-tagline">
+                <p class="hero-tagline" id="heroTagline">
                     <span class="line-number">04</span> <span class="keyword">const</span> <span class="variable">focus</span> = <span class="string">"Inventory Planning & Replenishment"</span>;
                 </p>
             </div>
@@ -78,6 +97,9 @@
                 <a href="#contact" class="btn btn-outline">
                     <i class="fas fa-paper-plane"></i> Get In Touch
                 </a>
+                <button class="btn btn-outline" id="whiteboardBtn">
+                    <i class="fas fa-chalkboard"></i> Whiteboard
+                </button>
             </div>
             <div class="social-links">
                 <a href="https://github.com/jason0960" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
@@ -349,6 +371,54 @@
             </div>
         </div>
     </footer>
+
+    <div class="wb-overlay" id="wbOverlay">
+        <div class="wb-annotation" data-target="modeToggle">
+            <span class="wb-label">setState({ mode })</span>
+            <svg class="wb-arrow" viewBox="0 0 40 40" width="40" height="40">
+                <path d="M20 38 Q18 20, 20 5" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
+                <polygon points="20,5 16,12 24,12" fill="var(--accent)" />
+            </svg>
+        </div>
+        <div class="wb-annotation" data-target="heroContent">
+            <span class="wb-label">AppState._subscribers[]</span>
+            <svg class="wb-arrow" viewBox="0 0 60 20" width="60" height="20">
+                <path d="M5 10 Q30 3, 55 10" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
+                <polygon points="55,10 48,6 49,15" fill="var(--accent)" />
+            </svg>
+        </div>
+        <div class="wb-annotation" data-target="editorTabs">
+            <span class="wb-label">props.activeSection</span>
+            <svg class="wb-arrow" viewBox="0 0 20 30" width="20" height="30">
+                <path d="M10 2 Q8 16, 10 26" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
+                <polygon points="10,26 6,20 14,20" fill="var(--accent)" />
+            </svg>
+        </div>
+        <div class="wb-annotation" data-target="typedText">
+            <span class="wb-label">Subscriber (typing effect)</span>
+            <svg class="wb-arrow" viewBox="0 0 60 20" width="60" height="20">
+                <path d="M55 10 Q30 3, 5 10" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
+                <polygon points="5,10 12,6 11,15" fill="var(--accent)" />
+            </svg>
+        </div>
+        <div class="wb-annotation" data-target="heroTagline">
+            <span class="wb-label">Derived prop (computed)</span>
+            <svg class="wb-arrow" viewBox="0 0 60 20" width="60" height="20">
+                <path d="M55 10 Q30 3, 5 10" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
+                <polygon points="5,10 12,6 11,15" fill="var(--accent)" />
+            </svg>
+        </div>
+        <div class="wb-annotation" data-target="whiteboardBtn">
+            <span class="wb-label">toggle('whiteboard')</span>
+            <svg class="wb-arrow" viewBox="0 0 40 30" width="40" height="30">
+                <path d="M20 28 Q18 14, 20 4" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
+                <polygon points="20,4 16,11 24,11" fill="var(--accent)" />
+            </svg>
+        </div>
+        <div class="wb-annotation" data-target="cursorGlow">
+            <span class="wb-label wb-label-float">Renderer: cursorGlow<br>if (props.isCreative)</span>
+        </div>
+    </div>
 
     <script src="script.js"></script>
 </body>
