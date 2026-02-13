@@ -680,6 +680,38 @@ section {
     border: 1px solid rgba(249, 99, 2, 0.15);
 }
 
+/* Try Me button callout */
+.btn-try-me {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 1.2rem;
+    padding: 0.65rem 1.4rem;
+    border: 2px solid var(--accent);
+    border-radius: 8px;
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-decoration: none;
+    background: rgba(249, 99, 2, 0.06);
+    transition: all 0.25s ease;
+    animation: tryMePulse 2.5s ease-in-out infinite;
+}
+
+.btn-try-me:hover {
+    background: var(--accent);
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(249, 99, 2, 0.35);
+    animation: none;
+}
+
+@keyframes tryMePulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(249, 99, 2, 0.25); }
+    50% { box-shadow: 0 0 12px 4px rgba(249, 99, 2, 0.18); }
+}
+
 /* Skills */
 .skills {
     background: var(--bg-secondary);
@@ -1536,21 +1568,10 @@ body.whiteboard-on #whiteboardBtn {
 
 @media (max-width: 768px) {
     .wb-overlay {
-        overflow: hidden;
+        display: none !important;
     }
 
-    .wb-annotation {
-        transform: scale(0.75);
-        transform-origin: top left;
-    }
-
-    .wb-label {
-        font-size: 0.9rem;
-        white-space: normal;
-        max-width: 55vw;
-    }
-
-    .wb-annotation[data-target="cursorGlow"] {
-        display: none;
+    #whiteboardBtn {
+        display: none !important;
     }
 }
