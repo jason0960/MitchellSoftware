@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Lumber Yard Restock Planner | Jason Mitchell</title>
     <link rel="stylesheet" href="pallet-builder.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -15,6 +15,9 @@
         <a href="index.html" class="pb-back"><i class="fas fa-arrow-left"></i> Back to Portfolio</a>
         <h1><i class="fas fa-warehouse"></i> Lumber Yard Restock Planner</h1>
         <span class="pb-subtitle">Three.js (WebGL/GPU) + Python PDF Generation</span>
+        <button class="pb-theme-toggle" id="themeToggle" title="Toggle Light/Dark">
+            <i class="fas fa-sun"></i>
+        </button>
     </header>
 
     <main class="pb-layout">
@@ -38,9 +41,17 @@
                 <span class="pb-legend-item"><span class="pb-legend-dot pb-dot-crit"></span>Critical</span>
                 <span class="pb-legend-item"><span class="pb-legend-dot pb-dot-empty"></span>Empty</span>
             </div>
+            <!-- Mobile sidebar toggle -->
+            <button class="pb-sidebar-toggle" id="sidebarToggle">
+                <i class="fas fa-list"></i> Order <span class="toggle-badge" id="toggleBadge">0</span>
+            </button>
         </section>
 
-        <aside class="pb-sidebar">
+        <aside class="pb-sidebar" id="pbSidebar">
+            <div class="pb-sidebar-header-mobile">
+                <span>Restock Planner</span>
+                <button id="closeSidebar" class="pb-sidebar-close"><i class="fas fa-xmark"></i></button>
+            </div>
             <div class="pb-panel pb-search-panel">
                 <div class="pb-search-wrap">
                     <i class="fas fa-search"></i>
@@ -110,5 +121,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="pallet-builder.js"></script>
+    <div class="pb-sidebar-backdrop" id="sidebarBackdrop"></div>
 </body>
 </html>
