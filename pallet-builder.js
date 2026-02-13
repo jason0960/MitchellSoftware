@@ -48,6 +48,15 @@ let animFrame;
 let cameraTarget = null;   // { pos: Vector3, lookAt: Vector3, t: 0 }
 const CAMERA_FLY_SPEED = 0.03;
 
+// ─── TRACKING ──────────────────────────────────────────────────
+function trackEvent(event) {
+    fetch('/api/track', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ event }),
+    }).catch(() => {});
+}
+
 // ─── INIT ──────────────────────────────────────────────────────
 function init() {
     initScene();
@@ -55,6 +64,11 @@ function init() {
     bindEvents();
     updateYardHealth();
     animate();
+    // Track demo page view (once per session)
+    if (!sessionStorage.getItem('tracked-demo-view')) {
+        trackEvent('demo_view');
+        sessionStorage.setItem('tracked-demo-view', '1');
+    }
 }
 
 // ─── THREE.JS SCENE ────────────────────────────────────────────
@@ -821,6 +835,7 @@ async function generatePdf() {
         const url = URL.createObjectURL(blob);
         window.open(url, '_blank');
         showStatus('Restock order PDF generated!', 'success');
+        trackEvent('pdf_generated');
     } catch (err) {
         showStatus('PDF generation failed — is the Flask server running?', 'error');
         console.error(err);
