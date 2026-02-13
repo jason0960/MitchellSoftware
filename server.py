@@ -6,6 +6,9 @@ Exposes Prometheus /metrics endpoint for observability.
 import io
 import base64
 import json
+import time
+import os
+import psutil
 from datetime import datetime
 
 from flask import Flask, request, send_file, jsonify, Response
@@ -19,10 +22,12 @@ from reportlab.platypus import (
     PageBreak, HRFlowable
 )
 from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
-from prometheus_client import Counter, generate_latest, CONTENT_TYPE_LATEST
+from prometheus_client import Counter, Gauge, Histogram, generate_latest, CONTENT_TYPE_LATEST
 
 app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app, resources={r"/api/*": {"origins": "*"}, r"/metrics": {"origins": "*"}})
+
+SERVER_START_TIME = time.time()
 
 # ─── Prometheus Counters ───────────────────────────────────────
 PORTFOLIO_VIEWS = Counter(
@@ -45,10 +50,86 @@ RESUME_ENJOYED = Counter(
     'resume_enjoyed_votes_total',
     'Total \"Enjoyed this resume\" votes'
 )
+REQUEST_COUNT = Counter(
+    'http_requests_total',
+    'Total HTTP requests',
+    ['method', 'endpoint', 'status']
+)
+
+# ─── Prometheus Gauges (system health) ─────────────────────────
+UPTIME_GAUGE = Gauge(
+    'server_uptime_seconds',
+    'Server uptime in seconds'
+)
+MEMORY_USAGE_MB = Gauge(
+    'process_memory_usage_mb',
+    'Process memory usage in MB'
+)
+CPU_PERCENT = Gauge(
+    'process_cpu_percent',
+    'Process CPU usage percentage'
+)
+ACTIVE_SESSIONS = Gauge(
+    'active_sessions_current',
+    'Estimated unique visitors in last 15 minutes'
+)
+
+# ─── Prometheus Histograms ─────────────────────────────────────
+REQUEST_LATENCY = Histogram(
+    'http_request_duration_seconds',
+    'HTTP request latency in seconds',
+    ['endpoint'],
+    buckets=[0.01, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10]
+)
+
+# ─── Session Tracking ──────────────────────────────────────────
+# In-memory session tracking (visitor IPs seen in last 15 min)
+_visitor_log = {}  # { ip: last_seen_timestamp }
+SESSION_WINDOW = 900  # 15 minutes
+
+
+def _update_system_metrics():
+    """Update system-level gauges."""
+    UPTIME_GAUGE.set(time.time() - SERVER_START_TIME)
+    process = psutil.Process(os.getpid())
+    MEMORY_USAGE_MB.set(round(process.memory_info().rss / 1024 / 1024, 1))
+    CPU_PERCENT.set(process.cpu_percent(interval=None))
+
+
+def _track_visitor(ip):
+    """Track unique visitors in a sliding window."""
+    now = time.time()
+    _visitor_log[ip] = now
+    # Prune old entries
+    cutoff = now - SESSION_WINDOW
+    to_delete = [k for k, v in _visitor_log.items() if v < cutoff]
+    for k in to_delete:
+        del _visitor_log[k]
+    ACTIVE_SESSIONS.set(len(_visitor_log))
+
+
+@app.before_request
+def before_request():
+    request._start_time = time.time()
+    _track_visitor(request.remote_addr or 'unknown')
+
+
+@app.after_request
+def after_request(response):
+    latency = time.time() - getattr(request, '_start_time', time.time())
+    endpoint = request.endpoint or 'unknown'
+    REQUEST_COUNT.labels(
+        method=request.method,
+        endpoint=endpoint,
+        status=response.status_code
+    ).inc()
+    REQUEST_LATENCY.labels(endpoint=endpoint).observe(latency)
+    return response
 
 
 @app.route('/metrics')
 def metrics():
+    _update_system_metrics()
     return Response(generate_latest(), mimetype=CONTENT_TYPE_LATEST)
 
 
@@ -74,12 +155,24 @@ def track_event():
 
 @app.route('/api/stats')
 def get_stats():
+    _update_system_metrics()
+    uptime = time.time() - SERVER_START_TIME
+    hours, rem = divmod(int(uptime), 3600)
+    minutes, seconds = divmod(rem, 60)
+    process = psutil.Process(os.getpid())
     return jsonify({
         'portfolio_views': int(PORTFOLIO_VIEWS._value.get()),
         'demo_views': int(DEMO_VIEWS._value.get()),
         'pdf_generations': int(PDF_GENERATIONS._value.get()),
         'contact_submissions': int(CONTACT_SUBMISSIONS._value.get()),
         'resume_enjoyed': int(RESUME_ENJOYED._value.get()),
+        'health': {
+            'uptime_seconds': round(uptime, 1),
+            'uptime_display': f'{hours}h {minutes}m {seconds}s',
+            'memory_mb': round(process.memory_info().rss / 1024 / 1024, 1),
+            'cpu_percent': process.cpu_percent(interval=None),
+            'active_sessions': len(_visitor_log),
+        }
     })
 
 
