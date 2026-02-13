@@ -159,56 +159,59 @@
             const absTop = r.top + scrollY;
             const absLeft = r.left;
             const absRight = r.right;
+            const absCenterX = absLeft + r.width / 2;
 
-            // Reset any previous fixed positioning
             ann.style.position = 'absolute';
 
             switch (targetId) {
-                // --- ABOVE the element, centered ---
+                // BELOW the navbar elements, arrow points up
                 case 'modeToggle':
-                    ann.style.left = Math.max(8, absLeft + r.width / 2 - 100) + 'px';
-                    ann.style.top = (absTop - 100) + 'px';
+                    ann.style.left = Math.max(8, absCenterX - 100) + 'px';
+                    ann.style.top = (absTop + r.height + 12) + 'px';
                     break;
 
                 case 'navBrand':
                     ann.style.left = Math.max(8, absLeft) + 'px';
-                    ann.style.top = (absTop - 100) + 'px';
+                    ann.style.top = (absTop + r.height + 12) + 'px';
                     break;
 
+                // RIGHT of editor tabs, offset away
                 case 'editorTabs':
-                    ann.style.left = Math.max(8, absLeft + r.width * 0.25) + 'px';
-                    ann.style.top = (absTop - 90) + 'px';
+                    ann.style.left = Math.min(vw - 280, absRight + 20) + 'px';
+                    ann.style.top = (absTop) + 'px';
                     break;
 
-                // --- RIGHT of the element ---
+                // LEFT of the typed text
                 case 'typedText':
-                    ann.style.left = Math.min(vw - 280, absRight + 30) + 'px';
+                    ann.style.left = Math.max(8, absLeft - 290) + 'px';
                     ann.style.top = (absTop - 5) + 'px';
                     break;
 
+                // RIGHT of tagline
                 case 'heroTagline':
                     ann.style.left = Math.min(vw - 280, absRight + 30) + 'px';
                     ann.style.top = (absTop - 5) + 'px';
                     break;
 
-                // --- BELOW the element ---
+                // BELOW the whiteboard button, arrow points up to it
                 case 'whiteboardBtn':
-                    ann.style.left = Math.max(8, absLeft + r.width / 2 - 80) + 'px';
-                    ann.style.top = (absTop + r.height + 15) + 'px';
+                    ann.style.left = Math.max(8, absLeft - 20) + 'px';
+                    ann.style.top = (absTop + r.height + 12) + 'px';
                     break;
 
-                // --- RIGHT of element ---
+                // RIGHT of social links row, aligned vertically
                 case 'socialLinks':
-                    ann.style.left = Math.min(vw - 250, absRight + 30) + 'px';
-                    ann.style.top = (absTop + 5) + 'px';
+                    ann.style.left = Math.min(vw - 250, absRight + 20) + 'px';
+                    ann.style.top = (absTop - 5) + 'px';
                     break;
 
+                // RIGHT of scroll hint
                 case 'scrollHint':
                     ann.style.left = Math.min(vw - 250, absRight + 30) + 'px';
                     ann.style.top = (absTop + 5) + 'px';
                     break;
 
-                // --- FIXED position (corner float) ---
+                // FIXED corner float
                 case 'cursorGlow':
                     ann.style.position = 'fixed';
                     ann.style.right = '2rem';
@@ -217,25 +220,26 @@
                     ann.style.top = 'auto';
                     return;
 
-                // --- RIGHT of section content ---
+                // RIGHT of timeline
                 case 'timeline':
                     ann.style.left = Math.min(vw - 280, absRight + 30) + 'px';
                     ann.style.top = (absTop + 30) + 'px';
                     break;
 
+                // ABOVE the grids/form, centered
                 case 'workGrid':
-                    ann.style.left = Math.min(vw - 280, absRight + 30) + 'px';
-                    ann.style.top = (absTop + 30) + 'px';
+                    ann.style.left = Math.max(8, absLeft) + 'px';
+                    ann.style.top = (absTop - 60) + 'px';
                     break;
 
                 case 'skillsGrid':
-                    ann.style.left = Math.min(vw - 280, absRight + 30) + 'px';
-                    ann.style.top = (absTop + 30) + 'px';
+                    ann.style.left = Math.max(8, absLeft) + 'px';
+                    ann.style.top = (absTop - 60) + 'px';
                     break;
 
                 case 'contactForm':
-                    ann.style.left = Math.min(vw - 280, absRight + 30) + 'px';
-                    ann.style.top = (absTop + 30) + 'px';
+                    ann.style.left = Math.max(8, absLeft) + 'px';
+                    ann.style.top = (absTop - 60) + 'px';
                     break;
             }
         });
