@@ -834,7 +834,7 @@ section {
 .enjoyed-card{
     display:flex;align-items:center;gap:2rem;
     background:var(--card);border:1px solid var(--border);border-radius:12px;
-    padding:2rem;max-width:800px;margin:0 auto;
+    padding:2rem;max-width:800px;margin:0 auto;box-sizing:border-box;
 }
 .enjoyed-left{flex:1}
 .enjoyed-left h3{
@@ -867,8 +867,9 @@ section {
 .btn-enjoyed.voted{background:#22c55e}
 
 @media(max-width:700px){
-    .enjoyed-card{flex-direction:column;text-align:center}
+    .enjoyed-card{flex-direction:column;text-align:center;padding:1.2rem}
     .enjoyed-stats{justify-content:center}
+    .enjoyed-left h3{justify-content:center}
 }
 
 /* Footer */
@@ -1498,10 +1499,6 @@ body.whiteboard-on #whiteboardBtn {
 
 @media (max-width: 768px) {
     .wb-overlay {
-        display: none !important;
-    }
-
-    #whiteboardBtn {
         display: none !important;
     }
 }
