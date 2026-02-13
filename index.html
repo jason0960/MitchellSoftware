@@ -17,7 +17,7 @@
 
     <nav class="navbar">
         <div class="container">
-            <div class="nav-brand">
+            <div class="nav-brand" id="navBrand">
                 <span class="brand-bracket">{</span> JM <span class="brand-bracket">}</span>
             </div>
             <ul class="nav-menu" id="navMenu">
@@ -101,13 +101,13 @@
                     <i class="fas fa-chalkboard"></i> Whiteboard
                 </button>
             </div>
-            <div class="social-links">
+            <div class="social-links" id="socialLinks">
                 <a href="https://github.com/jason0960" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
                 <a href="https://www.linkedin.com/in/jason-mitchell-b39a4418b" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
                 <a href="mailto:jasonmitchell096@gmail.com" aria-label="Email"><i class="fas fa-envelope"></i></a>
             </div>
         </div>
-        <div class="scroll-indicator">
+        <div class="scroll-indicator" id="scrollHint">
             <a href="#journey"><i class="fas fa-chevron-down"></i></a>
         </div>
     </section>
@@ -119,7 +119,7 @@
             </h2>
             <p class="section-subtitle creative-only">My path from bootcamp to enterprise engineering at The Home Depot</p>
             <p class="section-subtitle professional-only">Professional experience and career progression at The Home Depot</p>
-            <div class="timeline">
+            <div class="timeline" id="timeline">
                 <div class="timeline-item" data-aos="fade-right">
                     <div class="timeline-marker">
                         <i class="fas fa-graduation-cap"></i>
@@ -164,7 +164,7 @@
             </h2>
             <p class="section-subtitle creative-only">Enterprise contributions in Inventory Planning & Replenishment</p>
             <p class="section-subtitle professional-only">Delivered measurable impact across enterprise applications and infrastructure</p>
-            <div class="work-grid">
+            <div class="work-grid" id="workGrid">
                 <div class="work-card">
                     <div class="work-card-icon">
                         <i class="fab fa-java"></i>
@@ -254,7 +254,7 @@
             </h2>
             <p class="section-subtitle creative-only">Technologies and tools I work with daily</p>
             <p class="section-subtitle professional-only">Core technologies and methodologies applied in enterprise environments</p>
-            <div class="skills-grid">
+            <div class="skills-grid" id="skillsGrid">
                 <div class="skill-category">
                     <div class="skill-icon"><i class="fas fa-server"></i></div>
                     <h3>Backend</h3>
@@ -373,50 +373,105 @@
     </footer>
 
     <div class="wb-overlay" id="wbOverlay">
+        <!-- 1 — Mode toggle -->
         <div class="wb-annotation" data-target="modeToggle">
-            <span class="wb-label">setState({ mode })</span>
+            <span class="wb-label">Flip this switch to change<br>the entire page design</span>
             <svg class="wb-arrow" viewBox="0 0 40 40" width="40" height="40">
                 <path d="M20 38 Q18 20, 20 5" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
                 <polygon points="20,5 16,12 24,12" fill="var(--accent)" />
             </svg>
         </div>
-        <div class="wb-annotation" data-target="heroContent">
-            <span class="wb-label">AppState._subscribers[]</span>
-            <svg class="wb-arrow" viewBox="0 0 60 20" width="60" height="20">
-                <path d="M5 10 Q30 3, 55 10" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
-                <polygon points="55,10 48,6 49,15" fill="var(--accent)" />
+        <!-- 2 — Nav brand -->
+        <div class="wb-annotation" data-target="navBrand">
+            <span class="wb-label">Personal logo &amp; branding</span>
+            <svg class="wb-arrow" viewBox="0 0 40 40" width="40" height="40">
+                <path d="M20 38 Q18 20, 20 5" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
+                <polygon points="20,5 16,12 24,12" fill="var(--accent)" />
             </svg>
         </div>
+        <!-- 3 — Editor tabs -->
         <div class="wb-annotation" data-target="editorTabs">
-            <span class="wb-label">props.activeSection</span>
+            <span class="wb-label">File tabs — click to jump<br>to each section</span>
             <svg class="wb-arrow" viewBox="0 0 20 30" width="20" height="30">
                 <path d="M10 2 Q8 16, 10 26" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
                 <polygon points="10,26 6,20 14,20" fill="var(--accent)" />
             </svg>
         </div>
+        <!-- 4 — Typed text -->
         <div class="wb-annotation" data-target="typedText">
-            <span class="wb-label">Subscriber (typing effect)</span>
+            <span class="wb-label">Auto-typing animation —<br>cycles through my titles</span>
             <svg class="wb-arrow" viewBox="0 0 60 20" width="60" height="20">
                 <path d="M55 10 Q30 3, 5 10" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
                 <polygon points="5,10 12,6 11,15" fill="var(--accent)" />
             </svg>
         </div>
+        <!-- 5 — Hero tagline -->
         <div class="wb-annotation" data-target="heroTagline">
-            <span class="wb-label">Derived prop (computed)</span>
+            <span class="wb-label">Styled like real code to<br>show what I work on</span>
             <svg class="wb-arrow" viewBox="0 0 60 20" width="60" height="20">
                 <path d="M55 10 Q30 3, 5 10" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
                 <polygon points="5,10 12,6 11,15" fill="var(--accent)" />
             </svg>
         </div>
+        <!-- 6 — Whiteboard button -->
         <div class="wb-annotation" data-target="whiteboardBtn">
-            <span class="wb-label">toggle('whiteboard')</span>
+            <span class="wb-label">You clicked this!<br>Turns these notes on &amp; off</span>
             <svg class="wb-arrow" viewBox="0 0 40 30" width="40" height="30">
                 <path d="M20 28 Q18 14, 20 4" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
                 <polygon points="20,4 16,11 24,11" fill="var(--accent)" />
             </svg>
         </div>
+        <!-- 7 — Social links -->
+        <div class="wb-annotation" data-target="socialLinks">
+            <span class="wb-label">Quick links — GitHub,<br>LinkedIn &amp; email</span>
+            <svg class="wb-arrow" viewBox="0 0 40 40" width="40" height="40">
+                <path d="M20 38 Q18 20, 20 5" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
+                <polygon points="20,5 16,12 24,12" fill="var(--accent)" />
+            </svg>
+        </div>
+        <!-- 8 — Scroll hint -->
+        <div class="wb-annotation" data-target="scrollHint">
+            <span class="wb-label">Scroll down to explore &darr;</span>
+            <svg class="wb-arrow" viewBox="0 0 60 20" width="60" height="20">
+                <path d="M55 10 Q30 3, 5 10" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
+                <polygon points="5,10 12,6 11,15" fill="var(--accent)" />
+            </svg>
+        </div>
+        <!-- 9 — Cursor glow (floating) -->
         <div class="wb-annotation" data-target="cursorGlow">
-            <span class="wb-label wb-label-float">Renderer: cursorGlow<br>if (props.isCreative)</span>
+            <span class="wb-label wb-label-float">That glow following your<br>mouse? That's on purpose.</span>
+        </div>
+        <!-- 10 — Timeline -->
+        <div class="wb-annotation" data-target="timeline">
+            <span class="wb-label">My career path — bootcamp<br>to full-time engineer</span>
+            <svg class="wb-arrow" viewBox="0 0 60 20" width="60" height="20">
+                <path d="M5 10 Q30 3, 55 10" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
+                <polygon points="55,10 48,6 49,15" fill="var(--accent)" />
+            </svg>
+        </div>
+        <!-- 11 — Work grid -->
+        <div class="wb-annotation" data-target="workGrid">
+            <span class="wb-label">Real projects I've shipped<br>at The Home Depot</span>
+            <svg class="wb-arrow" viewBox="0 0 60 20" width="60" height="20">
+                <path d="M5 10 Q30 3, 55 10" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
+                <polygon points="55,10 48,6 49,15" fill="var(--accent)" />
+            </svg>
+        </div>
+        <!-- 12 — Skills grid -->
+        <div class="wb-annotation" data-target="skillsGrid">
+            <span class="wb-label">Languages, tools &amp; tech<br>I use every day</span>
+            <svg class="wb-arrow" viewBox="0 0 60 20" width="60" height="20">
+                <path d="M5 10 Q30 3, 55 10" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
+                <polygon points="55,10 48,6 49,15" fill="var(--accent)" />
+            </svg>
+        </div>
+        <!-- 13 — Contact form -->
+        <div class="wb-annotation" data-target="contactForm">
+            <span class="wb-label">Send me a message — it<br>goes straight to my inbox</span>
+            <svg class="wb-arrow" viewBox="0 0 60 20" width="60" height="20">
+                <path d="M55 10 Q30 3, 5 10" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
+                <polygon points="5,10 12,6 11,15" fill="var(--accent)" />
+            </svg>
         </div>
     </div>
 

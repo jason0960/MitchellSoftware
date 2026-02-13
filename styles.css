@@ -1336,10 +1336,13 @@ body {
 /* Whiteboard overlay */
 .wb-overlay {
     display: none;
-    position: fixed;
+    position: absolute;
     inset: 0;
     z-index: 90;
     pointer-events: none;
+    width: 100%;
+    height: 100%;
+    min-height: 100vh;
 }
 
 body.whiteboard-on .wb-overlay {
@@ -1351,6 +1354,10 @@ body.whiteboard-on .wb-overlay {
     pointer-events: none;
     opacity: 0;
     transform: translateY(6px) scale(0.95);
+}
+
+.wb-annotation[data-target="cursorGlow"] {
+    position: fixed;
 }
 
 body.whiteboard-on .wb-annotation {
@@ -1389,12 +1396,18 @@ body.whiteboard-on .wb-annotation {
 }
 
 body.whiteboard-on .wb-annotation:nth-child(1) { animation-delay: 0s; }
-body.whiteboard-on .wb-annotation:nth-child(2) { animation-delay: 0.12s; }
-body.whiteboard-on .wb-annotation:nth-child(3) { animation-delay: 0.24s; }
-body.whiteboard-on .wb-annotation:nth-child(4) { animation-delay: 0.36s; }
-body.whiteboard-on .wb-annotation:nth-child(5) { animation-delay: 0.48s; }
-body.whiteboard-on .wb-annotation:nth-child(6) { animation-delay: 0.60s; }
-body.whiteboard-on .wb-annotation:nth-child(7) { animation-delay: 0.72s; }
+body.whiteboard-on .wb-annotation:nth-child(2) { animation-delay: 0.10s; }
+body.whiteboard-on .wb-annotation:nth-child(3) { animation-delay: 0.20s; }
+body.whiteboard-on .wb-annotation:nth-child(4) { animation-delay: 0.30s; }
+body.whiteboard-on .wb-annotation:nth-child(5) { animation-delay: 0.40s; }
+body.whiteboard-on .wb-annotation:nth-child(6) { animation-delay: 0.50s; }
+body.whiteboard-on .wb-annotation:nth-child(7) { animation-delay: 0.60s; }
+body.whiteboard-on .wb-annotation:nth-child(8) { animation-delay: 0.70s; }
+body.whiteboard-on .wb-annotation:nth-child(9) { animation-delay: 0.80s; }
+body.whiteboard-on .wb-annotation:nth-child(10) { animation-delay: 0.90s; }
+body.whiteboard-on .wb-annotation:nth-child(11) { animation-delay: 1.00s; }
+body.whiteboard-on .wb-annotation:nth-child(12) { animation-delay: 1.10s; }
+body.whiteboard-on .wb-annotation:nth-child(13) { animation-delay: 1.20s; }
 
 /* Whiteboard button active state */
 #whiteboardBtn {

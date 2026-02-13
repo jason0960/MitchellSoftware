@@ -139,57 +139,84 @@
         if (btn) btn.classList.toggle('active', props.whiteboard);
 
         if (props.whiteboard) {
+            const overlay = document.getElementById('wbOverlay');
+            if (overlay) overlay.style.height = document.documentElement.scrollHeight + 'px';
             requestAnimationFrame(positionAnnotations);
         }
     }
 
     function positionAnnotations() {
         const annotations = $$('.wb-annotation[data-target]');
+        const scrollY = window.scrollY;
         annotations.forEach(ann => {
             const targetId = ann.dataset.target;
             const target = document.getElementById(targetId);
             if (!target) return;
 
             const r = target.getBoundingClientRect();
+            const absTop = r.top + scrollY;
+            const absLeft = r.left;
 
             switch (targetId) {
                 case 'modeToggle':
-                    ann.style.left = (r.left + r.width / 2 - 60) + 'px';
-                    ann.style.top = (r.bottom + 10) + 'px';
+                    ann.style.left = (absLeft + r.width / 2 - 80) + 'px';
+                    ann.style.top = (absTop + r.height + 10) + 'px';
                     break;
-                case 'heroContent':
-                    ann.style.left = Math.max(12, r.left - 220) + 'px';
-                    ann.style.top = (r.top + r.height * 0.35) + 'px';
+                case 'navBrand':
+                    ann.style.left = (absLeft + r.width + 10) + 'px';
+                    ann.style.top = (absTop - 10) + 'px';
                     break;
                 case 'editorTabs':
-                    ann.style.left = (r.left + r.width * 0.3) + 'px';
-                    ann.style.top = (r.top - 52) + 'px';
+                    ann.style.left = (absLeft + r.width * 0.3) + 'px';
+                    ann.style.top = (absTop - 55) + 'px';
                     break;
                 case 'typedText':
                     ann.style.left = (r.right + 20) + 'px';
-                    ann.style.top = (r.top - 10) + 'px';
+                    ann.style.top = (absTop - 10) + 'px';
                     break;
                 case 'heroTagline':
                     ann.style.left = (r.right + 20) + 'px';
-                    ann.style.top = (r.top - 10) + 'px';
+                    ann.style.top = (absTop - 10) + 'px';
                     break;
                 case 'whiteboardBtn':
-                    ann.style.left = (r.left + r.width / 2 - 50) + 'px';
-                    ann.style.top = (r.bottom + 10) + 'px';
+                    ann.style.left = (absLeft + r.width / 2 - 60) + 'px';
+                    ann.style.top = (absTop + r.height + 10) + 'px';
+                    break;
+                case 'socialLinks':
+                    ann.style.left = (absLeft + r.width + 15) + 'px';
+                    ann.style.top = (absTop) + 'px';
+                    break;
+                case 'scrollHint':
+                    ann.style.left = (absLeft + r.width + 15) + 'px';
+                    ann.style.top = (absTop) + 'px';
                     break;
                 case 'cursorGlow':
+                    ann.style.position = 'fixed';
                     ann.style.right = '2rem';
                     ann.style.bottom = '5rem';
                     ann.style.left = 'auto';
                     ann.style.top = 'auto';
+                    return;
+                case 'timeline':
+                    ann.style.left = Math.max(12, absLeft - 200) + 'px';
+                    ann.style.top = (absTop + 20) + 'px';
+                    break;
+                case 'workGrid':
+                    ann.style.left = Math.max(12, absLeft - 200) + 'px';
+                    ann.style.top = (absTop + 20) + 'px';
+                    break;
+                case 'skillsGrid':
+                    ann.style.left = Math.max(12, absLeft - 200) + 'px';
+                    ann.style.top = (absTop + 20) + 'px';
+                    break;
+                case 'contactForm':
+                    ann.style.left = (r.right + 20) + 'px';
+                    ann.style.top = (absTop + 20) + 'px';
                     break;
             }
         });
     }
 
-    window.addEventListener('scroll', () => {
-        if (AppState.props.whiteboard) requestAnimationFrame(positionAnnotations);
-    });
     window.addEventListener('resize', () => {
         if (AppState.props.whiteboard) requestAnimationFrame(positionAnnotations);
     });
