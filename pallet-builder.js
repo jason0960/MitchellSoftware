@@ -44,6 +44,10 @@ let raycaster, mouse;
 let hoveredBunk = null;
 let animFrame;
 
+// Camera fly-to state
+let cameraTarget = null;   // { pos: Vector3, lookAt: Vector3, t: 0 }
+const CAMERA_FLY_SPEED = 0.03;
+
 // ─── INIT ──────────────────────────────────────────────────────
 function init() {
     initScene();
@@ -332,6 +336,14 @@ function createBunkMesh(bunk, rowIndex) {
     pctLabel.name = 'pctLabel';
     group.add(pctLabel);
 
+    // Low-stock glow (pulsing red box for bunks < 25%)
+    const glowMat = new THREE.MeshBasicMaterial({ color: 0xff3333, transparent: true, opacity: 0 });
+    const glowMesh = new THREE.Mesh(new THREE.BoxGeometry(rackW + 0.6, postH + 1, rackD + 0.6), glowMat);
+    glowMesh.position.y = (postH + 1) / 2;
+    glowMesh.name = 'lowStockGlow';
+    glowMesh.visible = false;
+    group.add(glowMesh);
+
     return group;
 }
 
@@ -421,6 +433,34 @@ function bindEvents() {
     document.querySelectorAll('.pb-cat-tab').forEach(tab => {
         tab.addEventListener('click', () => filterCategory(tab));
     });
+
+    // Mobile sidebar toggle
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const sidebar = document.getElementById('pbSidebar');
+    const backdrop = document.getElementById('sidebarBackdrop');
+    const closeSidebar = document.getElementById('closeSidebar');
+    if (sidebarToggle) {
+        sidebarToggle.addEventListener('click', () => { sidebar.classList.add('open'); backdrop.classList.add('visible'); });
+        closeSidebar.addEventListener('click', () => { sidebar.classList.remove('open'); backdrop.classList.remove('visible'); });
+        backdrop.addEventListener('click', () => { sidebar.classList.remove('open'); backdrop.classList.remove('visible'); });
+    }
+
+    // Dark/light theme toggle
+    const themeBtn = document.getElementById('themeToggle');
+    if (themeBtn) {
+        // Restore saved theme
+        if (localStorage.getItem('pb-theme') === 'light') {
+            document.body.classList.add('light-theme');
+            themeBtn.innerHTML = '<i class="fas fa-moon"></i>';
+            renderer.setClearColor(0xdde0e6);
+        }
+        themeBtn.addEventListener('click', () => {
+            const isLight = document.body.classList.toggle('light-theme');
+            themeBtn.innerHTML = isLight ? '<i class="fas fa-moon"></i>' : '<i class="fas fa-sun"></i>';
+            renderer.setClearColor(isLight ? 0xdde0e6 : 0x080c14);
+            localStorage.setItem('pb-theme', isLight ? 'light' : 'dark');
+        });
+    }
 }
 
 function onMouseMove(e) {
@@ -505,18 +545,28 @@ function toggleFlag(idx) {
     const bunk = bunkData[idx];
     bunk.flagged = !bunk.flagged;
 
-    // Visual feedback — outline ring
     updateBunkVisual(bunk);
 
     if (bunk.flagged) {
         restockOrder.push(bunk);
         showStatus(`Flagged ${bunk.name} for restocking`, 'success');
+        // Fly camera toward the bunk
+        if (bunk.meshGroup) {
+            const pos = bunk.meshGroup.position.clone();
+            const offset = camera.position.clone().sub(controls.target).normalize().multiplyScalar(25);
+            cameraTarget = {
+                pos: new THREE.Vector3(pos.x + offset.x, Math.max(camera.position.y, 20), pos.z + offset.z),
+                lookAt: new THREE.Vector3(pos.x, pos.y + 3, pos.z),
+                t: 0
+            };
+        }
     } else {
         restockOrder = restockOrder.filter(b => b.id !== bunk.id);
         showStatus(`Removed ${bunk.name} from restock order`, '');
     }
 
     updateSidebar();
+    updateToggleBadge();
     document.getElementById('hoverHint').classList.add('hidden');
 }
 
@@ -609,6 +659,11 @@ function removeBunkByIndex(idx) {
     toggleFlag(idx);
 }
 
+function updateToggleBadge() {
+    const badge = document.getElementById('toggleBadge');
+    if (badge) badge.textContent = restockOrder.length;
+}
+
 function clearSelection() {
     bunkData.forEach((b, i) => {
         if (b.flagged) toggleFlag(i);
@@ -669,14 +724,41 @@ function resetView() {
 // ─── ANIMATE ───────────────────────────────────────────────────
 function animate() {
     animFrame = requestAnimationFrame(animate);
+
+    // Camera fly-to animation
+    if (cameraTarget) {
+        cameraTarget.t += CAMERA_FLY_SPEED;
+        const t = Math.min(cameraTarget.t, 1);
+        const ease = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; // easeInOutQuad
+        camera.position.lerpVectors(camera.position, cameraTarget.pos, ease * 0.08);
+        controls.target.lerp(cameraTarget.lookAt, ease * 0.08);
+        if (t >= 1) cameraTarget = null;
+    }
+
     controls.update();
 
-    // Pulse flagged bunk rings
     const t = Date.now() * 0.003;
+
     bunkData.forEach(b => {
-        if (!b.flagged || !b.meshGroup) return;
-        const ring = b.meshGroup.getObjectByName('flagRing');
-        if (ring) ring.material.opacity = 0.5 + 0.3 * Math.sin(t);
+        if (!b.meshGroup) return;
+
+        // Pulse flagged bunk rings
+        if (b.flagged) {
+            const ring = b.meshGroup.getObjectByName('flagRing');
+            if (ring) ring.material.opacity = 0.5 + 0.3 * Math.sin(t);
+        }
+
+        // Low-stock pulse glow (< 25% and not flagged)
+        const pct = b.current / b.capacity;
+        const glow = b.meshGroup.getObjectByName('lowStockGlow');
+        if (glow) {
+            if (pct < 0.25 && pct > 0 && !b.flagged) {
+                glow.visible = true;
+                glow.material.opacity = 0.15 + 0.1 * Math.sin(t * 1.5);
+            } else {
+                glow.visible = false;
+            }
+        }
     });
 
     renderer.render(scene, camera);
