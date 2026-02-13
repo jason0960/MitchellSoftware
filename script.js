@@ -148,6 +148,8 @@
     function positionAnnotations() {
         const annotations = $$('.wb-annotation[data-target]');
         const scrollY = window.scrollY;
+        const vw = window.innerWidth;
+
         annotations.forEach(ann => {
             const targetId = ann.dataset.target;
             const target = document.getElementById(targetId);
@@ -156,62 +158,84 @@
             const r = target.getBoundingClientRect();
             const absTop = r.top + scrollY;
             const absLeft = r.left;
+            const absRight = r.right;
+
+            // Reset any previous fixed positioning
+            ann.style.position = 'absolute';
 
             switch (targetId) {
+                // --- ABOVE the element, centered ---
                 case 'modeToggle':
-                    ann.style.left = (absLeft + r.width / 2 - 80) + 'px';
-                    ann.style.top = (absTop + r.height + 10) + 'px';
+                    ann.style.left = Math.max(8, absLeft + r.width / 2 - 100) + 'px';
+                    ann.style.top = (absTop - 100) + 'px';
                     break;
+
                 case 'navBrand':
-                    ann.style.left = (absLeft + r.width + 10) + 'px';
-                    ann.style.top = (absTop - 10) + 'px';
+                    ann.style.left = Math.max(8, absLeft) + 'px';
+                    ann.style.top = (absTop - 100) + 'px';
                     break;
+
                 case 'editorTabs':
-                    ann.style.left = (absLeft + r.width * 0.3) + 'px';
-                    ann.style.top = (absTop - 55) + 'px';
+                    ann.style.left = Math.max(8, absLeft + r.width * 0.25) + 'px';
+                    ann.style.top = (absTop - 90) + 'px';
                     break;
+
+                // --- RIGHT of the element ---
                 case 'typedText':
-                    ann.style.left = (r.right + 20) + 'px';
-                    ann.style.top = (absTop - 10) + 'px';
+                    ann.style.left = Math.min(vw - 280, absRight + 30) + 'px';
+                    ann.style.top = (absTop - 5) + 'px';
                     break;
+
                 case 'heroTagline':
-                    ann.style.left = (r.right + 20) + 'px';
-                    ann.style.top = (absTop - 10) + 'px';
+                    ann.style.left = Math.min(vw - 280, absRight + 30) + 'px';
+                    ann.style.top = (absTop - 5) + 'px';
                     break;
+
+                // --- BELOW the element ---
                 case 'whiteboardBtn':
-                    ann.style.left = (absLeft + r.width / 2 - 60) + 'px';
-                    ann.style.top = (absTop + r.height + 10) + 'px';
+                    ann.style.left = Math.max(8, absLeft + r.width / 2 - 80) + 'px';
+                    ann.style.top = (absTop + r.height + 15) + 'px';
                     break;
+
+                // --- RIGHT of element ---
                 case 'socialLinks':
-                    ann.style.left = (absLeft + r.width + 15) + 'px';
-                    ann.style.top = (absTop) + 'px';
+                    ann.style.left = Math.min(vw - 250, absRight + 30) + 'px';
+                    ann.style.top = (absTop + 5) + 'px';
                     break;
+
                 case 'scrollHint':
-                    ann.style.left = (absLeft + r.width + 15) + 'px';
-                    ann.style.top = (absTop) + 'px';
+                    ann.style.left = Math.min(vw - 250, absRight + 30) + 'px';
+                    ann.style.top = (absTop + 5) + 'px';
                     break;
+
+                // --- FIXED position (corner float) ---
                 case 'cursorGlow':
                     ann.style.position = 'fixed';
                     ann.style.right = '2rem';
-                    ann.style.bottom = '5rem';
+                    ann.style.bottom = '3rem';
                     ann.style.left = 'auto';
                     ann.style.top = 'auto';
                     return;
+
+                // --- RIGHT of section content ---
                 case 'timeline':
-                    ann.style.left = Math.max(12, absLeft - 200) + 'px';
-                    ann.style.top = (absTop + 20) + 'px';
+                    ann.style.left = Math.min(vw - 280, absRight + 30) + 'px';
+                    ann.style.top = (absTop + 30) + 'px';
                     break;
+
                 case 'workGrid':
-                    ann.style.left = Math.max(12, absLeft - 200) + 'px';
-                    ann.style.top = (absTop + 20) + 'px';
+                    ann.style.left = Math.min(vw - 280, absRight + 30) + 'px';
+                    ann.style.top = (absTop + 30) + 'px';
                     break;
+
                 case 'skillsGrid':
-                    ann.style.left = Math.max(12, absLeft - 200) + 'px';
-                    ann.style.top = (absTop + 20) + 'px';
+                    ann.style.left = Math.min(vw - 280, absRight + 30) + 'px';
+                    ann.style.top = (absTop + 30) + 'px';
                     break;
+
                 case 'contactForm':
-                    ann.style.left = (r.right + 20) + 'px';
-                    ann.style.top = (absTop + 20) + 'px';
+                    ann.style.left = Math.min(vw - 280, absRight + 30) + 'px';
+                    ann.style.top = (absTop + 30) + 'px';
                     break;
             }
         });

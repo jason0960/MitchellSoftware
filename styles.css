@@ -1366,28 +1366,35 @@ body.whiteboard-on .wb-annotation {
 
 .wb-label {
     font-family: 'Caveat', cursive;
-    font-size: 1.15rem;
+    font-size: 1.2rem;
     font-weight: 600;
     color: var(--accent);
     white-space: nowrap;
     line-height: 1.3;
-    display: block;
-    background: rgba(10, 14, 23, 0.85);
-    border: 1.5px dashed rgba(249, 99, 2, 0.35);
+    display: inline-block;
+    background: rgba(10, 14, 23, 0.92);
+    border: 1.5px dashed rgba(249, 99, 2, 0.45);
     border-radius: 6px;
-    padding: 0.25rem 0.6rem;
+    padding: 0.3rem 0.7rem;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
 }
 
 .wb-label-float {
-    background: rgba(10, 14, 23, 0.85);
-    border: 1.5px dashed rgba(249, 99, 2, 0.35);
+    background: rgba(10, 14, 23, 0.92);
+    border: 1.5px dashed rgba(249, 99, 2, 0.45);
     border-radius: 6px;
     padding: 0.3rem 0.7rem;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.5);
 }
 
 .wb-arrow {
-    display: block;
+    display: inline-block;
+    vertical-align: middle;
     filter: drop-shadow(0 0 3px rgba(249, 99, 2, 0.2));
+}
+
+.wb-arrow-left {
+    margin-right: 4px;
 }
 
 @keyframes wb-fade-in {
