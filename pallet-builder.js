@@ -422,6 +422,7 @@ function bindEvents() {
     const canvas = renderer.domElement;
     canvas.addEventListener('mousemove', onMouseMove);
     canvas.addEventListener('click', onMouseClick);
+    canvas.addEventListener('dblclick', onDoubleClick);
     canvas.addEventListener('touchend', onTouchTap, { passive: false });
     document.getElementById('generatePdfBtn').addEventListener('click', generatePdf);
     document.getElementById('clearCartBtn').addEventListener('click', clearSelection);
@@ -541,6 +542,21 @@ function onTouchTap(e) {
     }
 }
 
+function onDoubleClick(e) {
+    // Fly camera to hovered bunk on double-click
+    if (hoveredBunk === null) return;
+    const bunk = bunkData[hoveredBunk];
+    if (bunk.meshGroup) {
+        const pos = bunk.meshGroup.position.clone();
+        const offset = camera.position.clone().sub(controls.target).normalize().multiplyScalar(25);
+        cameraTarget = {
+            pos: new THREE.Vector3(pos.x + offset.x, Math.max(camera.position.y, 20), pos.z + offset.z),
+            lookAt: new THREE.Vector3(pos.x, pos.y + 3, pos.z),
+            t: 0
+        };
+    }
+}
+
 function toggleFlag(idx) {
     const bunk = bunkData[idx];
     bunk.flagged = !bunk.flagged;
@@ -550,16 +566,6 @@ function toggleFlag(idx) {
     if (bunk.flagged) {
         restockOrder.push(bunk);
         showStatus(`Flagged ${bunk.name} for restocking`, 'success');
-        // Fly camera toward the bunk
-        if (bunk.meshGroup) {
-            const pos = bunk.meshGroup.position.clone();
-            const offset = camera.position.clone().sub(controls.target).normalize().multiplyScalar(25);
-            cameraTarget = {
-                pos: new THREE.Vector3(pos.x + offset.x, Math.max(camera.position.y, 20), pos.z + offset.z),
-                lookAt: new THREE.Vector3(pos.x, pos.y + 3, pos.z),
-                t: 0
-            };
-        }
     } else {
         restockOrder = restockOrder.filter(b => b.id !== bunk.id);
         showStatus(`Removed ${bunk.name} from restock order`, '');
@@ -805,7 +811,7 @@ async function generatePdf() {
     };
 
     try {
-        const res = await fetch('http://localhost:5000/generate-pdf', {
+        const res = await fetch('/generate-pdf', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload),
