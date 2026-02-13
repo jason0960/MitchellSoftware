@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lumber Yard Restock Planner | Jason Mitchell</title>
+    <link rel="stylesheet" href="pallet-builder.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="pb-header">
+        <a href="index.html" class="pb-back"><i class="fas fa-arrow-left"></i> Back to Portfolio</a>
+        <h1><i class="fas fa-warehouse"></i> Lumber Yard Restock Planner</h1>
+        <span class="pb-subtitle">Three.js (WebGL/GPU) + Python PDF Generation</span>
+    </header>
+
+    <main class="pb-layout">
+        <section class="pb-viewport">
+            <canvas id="yardCanvas"></canvas>
+            <div class="pb-hint" id="hoverHint">
+                <i class="fas fa-hand-pointer"></i> Click bunks to flag them for restocking
+            </div>
+            <div class="pb-item-tooltip" id="itemTooltip"></div>
+            <div class="pb-controls-3d">
+                <button id="rotateLeftBtn" title="Rotate Left"><i class="fas fa-undo"></i></button>
+                <button id="resetViewBtn" title="Reset View"><i class="fas fa-expand"></i></button>
+                <button id="rotateRightBtn" title="Rotate Right"><i class="fas fa-redo"></i></button>
+                <span class="pb-divider"></span>
+                <button id="randomizeBtn" title="Randomize Inventory"><i class="fas fa-shuffle"></i> Randomize</button>
+            </div>
+            <div class="pb-legend">
+                <span class="pb-legend-item"><span class="pb-legend-dot pb-dot-full"></span>Full</span>
+                <span class="pb-legend-item"><span class="pb-legend-dot pb-dot-ok"></span> &gt;50%</span>
+                <span class="pb-legend-item"><span class="pb-legend-dot pb-dot-low"></span> &lt;50%</span>
+                <span class="pb-legend-item"><span class="pb-legend-dot pb-dot-crit"></span>Critical</span>
+                <span class="pb-legend-item"><span class="pb-legend-dot pb-dot-empty"></span>Empty</span>
+            </div>
+        </section>
+
+        <aside class="pb-sidebar">
+            <div class="pb-panel pb-search-panel">
+                <div class="pb-search-wrap">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Search lumber..." autocomplete="off">
+                </div>
+                <div class="pb-category-tabs" id="categoryTabs">
+                    <button class="pb-cat-tab active" data-cat="all">All</button>
+                    <button class="pb-cat-tab" data-cat="Dimensional"><i class="fas fa-ruler-combined"></i> Dim</button>
+                    <button class="pb-cat-tab" data-cat="Sheet"><i class="fas fa-square"></i> Sheet</button>
+                    <button class="pb-cat-tab" data-cat="Treated"><i class="fas fa-shield-halved"></i> PT</button>
+                    <button class="pb-cat-tab" data-cat="Specialty"><i class="fas fa-star"></i> Spec</button>
+                </div>
+            </div>
+
+            <div class="pb-panel">
+                <h2><i class="fas fa-truck-loading"></i> Restock Order <span class="cart-badge" id="cartBadge">0</span></h2>
+                <div id="cartList" class="pb-inventory-list">
+                    <p class="pb-empty">No bunks flagged — click low bunks in the yard!</p>
+                </div>
+                <div class="pb-load-stats">
+                    <div class="pb-load-bar-wrap">
+                        <div class="pb-load-bar" id="weightBar" style="width: 0%"></div>
+                    </div>
+                    <div class="pb-load-bar-label">
+                        <span id="weightLabel">0 lbs</span>
+                        <span id="weightMax">/ 48,000 lbs (truck max)</span>
+                    </div>
+                </div>
+                <div class="pb-summary" id="cartSummary">
+                    <div><span>Bunks</span> <strong id="totalItems">0</strong></div>
+                    <div><span>Total Pcs</span> <strong id="totalQty">0</strong></div>
+                    <div><span>Est. Cost</span> <strong id="totalPrice">$0.00</strong></div>
+                </div>
+            </div>
+
+            <div class="pb-panel">
+                <h2><i class="fas fa-chart-bar"></i> Yard Health</h2>
+                <div class="pb-shelf-status">
+                    <div class="pb-stat">
+                        <span class="pb-stat-label">Full</span>
+                        <span class="pb-stat-value pb-stat-green" id="fullCount">0</span>
+                    </div>
+                    <div class="pb-stat">
+                        <span class="pb-stat-label">Low</span>
+                        <span class="pb-stat-value pb-stat-orange" id="lowCount">0</span>
+                    </div>
+                    <div class="pb-stat">
+                        <span class="pb-stat-label">Critical</span>
+                        <span class="pb-stat-value pb-stat-red" id="critCount">0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pb-panel pb-actions">
+                <button id="generatePdfBtn" class="pb-btn pb-btn-accent" disabled>
+                    <i class="fas fa-file-pdf"></i> Generate Restock Order (PDF)
+                </button>
+                <button id="clearCartBtn" class="pb-btn pb-btn-outline">
+                    <i class="fas fa-xmark"></i> Clear Selection
+                </button>
+            </div>
+
+            <div class="pb-status" id="statusMsg"></div>
+        </aside>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="pallet-builder.js"></script>
+</body>
+</html>
