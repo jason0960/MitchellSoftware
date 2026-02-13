@@ -201,8 +201,8 @@
 
                 // RIGHT of social links row, aligned vertically
                 case 'socialLinks':
-                    ann.style.left = Math.min(vw - 250, absRight + 20) + 'px';
-                    ann.style.top = (absTop - 5) + 'px';
+                    ann.style.left = Math.max(8, absLeft + r.width + 15) + 'px';
+                    ann.style.top = (absTop) + 'px';
                     break;
 
                 // RIGHT of scroll hint
