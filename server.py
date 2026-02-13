@@ -22,7 +22,7 @@ from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
 from prometheus_client import Counter, generate_latest, CONTENT_TYPE_LATEST
 
 app = Flask(__name__, static_folder='.', static_url_path='')
-CORS(app)
+CORS(app, resources={r"/api/*": {"origins": "*"}, r"/metrics": {"origins": "*"}})
 
 # ─── Prometheus Counters ───────────────────────────────────────
 PORTFOLIO_VIEWS = Counter(
