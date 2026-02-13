@@ -373,67 +373,67 @@
     </footer>
 
     <div class="wb-overlay" id="wbOverlay">
-        <!-- 1 — Mode toggle -->
-        <div class="wb-annotation" data-target="modeToggle">
-            <svg class="wb-arrow" viewBox="0 0 40 50" width="40" height="50">
-                <path d="M20 5 Q18 25, 20 48" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
-                <polygon points="20,48 16,40 24,40" fill="var(--accent)" />
+        <!-- 1 — Mode toggle: label BELOW, arrow points UP to toggle -->
+        <div class="wb-annotation wb-below" data-target="modeToggle">
+            <svg class="wb-arrow" viewBox="0 0 30 40" width="30" height="40">
+                <polygon points="15,2 11,10 19,10" fill="var(--accent)" />
+                <path d="M15 10 Q13 25, 15 38" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
             </svg>
             <span class="wb-label">State toggle — flips the entire<br>page theme using setState()</span>
         </div>
-        <!-- 2 — Nav brand -->
-        <div class="wb-annotation" data-target="navBrand">
-            <svg class="wb-arrow" viewBox="0 0 40 50" width="40" height="50">
-                <path d="M20 5 Q18 25, 20 48" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
-                <polygon points="20,48 16,40 24,40" fill="var(--accent)" />
+        <!-- 2 — Nav brand: label BELOW, arrow points UP to brand -->
+        <div class="wb-annotation wb-below" data-target="navBrand">
+            <svg class="wb-arrow" viewBox="0 0 30 40" width="30" height="40">
+                <polygon points="15,2 11,10 19,10" fill="var(--accent)" />
+                <path d="M15 10 Q13 25, 15 38" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
             </svg>
             <span class="wb-label">Brand component — renders<br>the site identity mark</span>
         </div>
-        <!-- 3 — Editor tabs -->
-        <div class="wb-annotation" data-target="editorTabs">
-            <svg class="wb-arrow wb-arrow-left" viewBox="0 0 60 20" width="60" height="20">
-                <path d="M55 10 Q30 3, 5 10" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
-                <polygon points="5,10 12,6 11,15" fill="var(--accent)" />
+        <!-- 3 — Editor tabs: label RIGHT, arrow points LEFT to tabs -->
+        <div class="wb-annotation wb-right" data-target="editorTabs">
+            <svg class="wb-arrow" viewBox="0 0 50 20" width="50" height="20">
+                <polygon points="2,10 10,6 10,14" fill="var(--accent)" />
+                <path d="M10 10 Q30 5, 48 10" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
             </svg>
             <span class="wb-label">Tab navigation — each tab routes<br>to a page section via scroll</span>
         </div>
-        <!-- 4 — Typed text -->
-        <div class="wb-annotation" data-target="typedText">
+        <!-- 4 — Typed text: label LEFT, arrow points RIGHT to text -->
+        <div class="wb-annotation wb-left" data-target="typedText">
             <span class="wb-label">Typing animation — a subscriber<br>that auto-cycles through job titles</span>
-            <svg class="wb-arrow" viewBox="0 0 60 20" width="60" height="20">
-                <path d="M5 10 Q30 3, 55 10" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
-                <polygon points="55,10 48,6 49,15" fill="var(--accent)" />
+            <svg class="wb-arrow" viewBox="0 0 50 20" width="50" height="20">
+                <path d="M2 10 Q20 5, 40 10" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
+                <polygon points="48,10 40,6 40,14" fill="var(--accent)" />
             </svg>
         </div>
-        <!-- 5 — Hero tagline -->
-        <div class="wb-annotation" data-target="heroTagline">
-            <svg class="wb-arrow wb-arrow-left" viewBox="0 0 60 20" width="60" height="20">
-                <path d="M55 10 Q30 3, 5 10" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
-                <polygon points="5,10 12,6 11,15" fill="var(--accent)" />
-            </svg>
+        <!-- 5 — Hero tagline: label LEFT, arrow points RIGHT -->
+        <div class="wb-annotation wb-left" data-target="heroTagline">
             <span class="wb-label">Inline code styling — shows my<br>current focus area as a variable</span>
-        </div>
-        <!-- 6 — Whiteboard button -->
-        <div class="wb-annotation" data-target="whiteboardBtn">
-            <span class="wb-label">You clicked this! Toggles the<br>whiteboard state on &amp; off</span>
-            <svg class="wb-arrow" viewBox="0 0 40 50" width="40" height="50">
-                <path d="M20 48 Q18 25, 20 5" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
-                <polygon points="20,5 16,12 24,12" fill="var(--accent)" />
+            <svg class="wb-arrow" viewBox="0 0 50 20" width="50" height="20">
+                <path d="M2 10 Q20 5, 40 10" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
+                <polygon points="48,10 40,6 40,14" fill="var(--accent)" />
             </svg>
         </div>
-        <!-- 7 — Social links -->
-        <div class="wb-annotation" data-target="socialLinks">
-            <svg class="wb-arrow wb-arrow-left" viewBox="0 0 60 20" width="60" height="20">
-                <path d="M55 10 Q30 3, 5 10" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
-                <polygon points="5,10 12,6 11,15" fill="var(--accent)" />
+        <!-- 6 — Whiteboard button: label BELOW, arrow points UP -->
+        <div class="wb-annotation wb-below" data-target="whiteboardBtn">
+            <svg class="wb-arrow" viewBox="0 0 30 40" width="30" height="40">
+                <polygon points="15,2 11,10 19,10" fill="var(--accent)" />
+                <path d="M15 10 Q13 25, 15 38" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
+            </svg>
+            <span class="wb-label">You clicked this! Toggles the<br>whiteboard state on &amp; off</span>
+        </div>
+        <!-- 7 — Social links: label BELOW, arrow points UP -->
+        <div class="wb-annotation wb-below" data-target="socialLinks">
+            <svg class="wb-arrow" viewBox="0 0 30 40" width="30" height="40">
+                <polygon points="15,2 11,10 19,10" fill="var(--accent)" />
+                <path d="M15 10 Q13 25, 15 38" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
             </svg>
             <span class="wb-label">External links — GitHub,<br>LinkedIn &amp; email</span>
         </div>
-        <!-- 8 — Scroll hint -->
-        <div class="wb-annotation" data-target="scrollHint">
-            <svg class="wb-arrow wb-arrow-left" viewBox="0 0 60 20" width="60" height="20">
-                <path d="M55 10 Q30 3, 5 10" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
-                <polygon points="5,10 12,6 11,15" fill="var(--accent)" />
+        <!-- 8 — Scroll hint: label RIGHT, arrow points LEFT -->
+        <div class="wb-annotation wb-right" data-target="scrollHint">
+            <svg class="wb-arrow" viewBox="0 0 50 20" width="50" height="20">
+                <polygon points="2,10 10,6 10,14" fill="var(--accent)" />
+                <path d="M10 10 Q30 5, 48 10" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
             </svg>
             <span class="wb-label">Scroll cue — guides the user<br>to explore below the fold</span>
         </div>
@@ -441,36 +441,36 @@
         <div class="wb-annotation" data-target="cursorGlow">
             <span class="wb-label wb-label-float">Cursor glow — a visual effect<br>that tracks mousemove events</span>
         </div>
-        <!-- 10 — Timeline -->
-        <div class="wb-annotation" data-target="timeline">
-            <svg class="wb-arrow wb-arrow-left" viewBox="0 0 60 20" width="60" height="20">
-                <path d="M55 10 Q30 3, 5 10" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
-                <polygon points="5,10 12,6 11,15" fill="var(--accent)" />
+        <!-- 10 — Timeline: label RIGHT, arrow points LEFT -->
+        <div class="wb-annotation wb-right" data-target="timeline">
+            <svg class="wb-arrow" viewBox="0 0 50 20" width="50" height="20">
+                <polygon points="2,10 10,6 10,14" fill="var(--accent)" />
+                <path d="M10 10 Q30 5, 48 10" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
             </svg>
             <span class="wb-label">Career timeline — rendered with<br>CSS grid &amp; scroll-triggered reveals</span>
         </div>
-        <!-- 11 — Work grid -->
-        <div class="wb-annotation" data-target="workGrid">
+        <!-- 11 — Work grid: label ABOVE, arrow points DOWN -->
+        <div class="wb-annotation wb-above" data-target="workGrid">
             <span class="wb-label">Project cards — real features I've<br>shipped at The Home Depot</span>
-            <svg class="wb-arrow" viewBox="0 0 20 30" width="20" height="30">
-                <path d="M10 2 Q8 16, 10 26" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
-                <polygon points="10,26 6,20 14,20" fill="var(--accent)" />
+            <svg class="wb-arrow" viewBox="0 0 30 40" width="30" height="40">
+                <path d="M15 2 Q13 18, 15 30" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
+                <polygon points="15,38 11,30 19,30" fill="var(--accent)" />
             </svg>
         </div>
-        <!-- 12 — Skills grid -->
-        <div class="wb-annotation" data-target="skillsGrid">
+        <!-- 12 — Skills grid: label ABOVE, arrow points DOWN -->
+        <div class="wb-annotation wb-above" data-target="skillsGrid">
             <span class="wb-label">Tech stack — languages, frameworks<br>&amp; tools grouped by category</span>
-            <svg class="wb-arrow" viewBox="0 0 20 30" width="20" height="30">
-                <path d="M10 2 Q8 16, 10 26" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
-                <polygon points="10,26 6,20 14,20" fill="var(--accent)" />
+            <svg class="wb-arrow" viewBox="0 0 30 40" width="30" height="40">
+                <path d="M15 2 Q13 18, 15 30" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
+                <polygon points="15,38 11,30 19,30" fill="var(--accent)" />
             </svg>
         </div>
-        <!-- 13 — Contact form -->
-        <div class="wb-annotation" data-target="contactForm">
+        <!-- 13 — Contact form: label ABOVE, arrow points DOWN -->
+        <div class="wb-annotation wb-above" data-target="contactForm">
             <span class="wb-label">Contact form — sends messages<br>via EmailJS to my inbox</span>
-            <svg class="wb-arrow" viewBox="0 0 20 30" width="20" height="30">
-                <path d="M10 2 Q8 16, 10 26" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
-                <polygon points="10,26 6,20 14,20" fill="var(--accent)" />
+            <svg class="wb-arrow" viewBox="0 0 30 40" width="30" height="40">
+                <path d="M15 2 Q13 18, 15 30" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
+                <polygon points="15,38 11,30 19,30" fill="var(--accent)" />
             </svg>
         </div>
     </div>

@@ -158,60 +158,76 @@
             const r = target.getBoundingClientRect();
             const absTop = r.top + scrollY;
             const absLeft = r.left;
-            const absRight = r.right;
-            const absCenterX = absLeft + r.width / 2;
+            const centerX = absLeft + r.width / 2;
 
             ann.style.position = 'absolute';
 
             switch (targetId) {
-                // BELOW the navbar elements, arrow points up
+                // --- BELOW: arrow tip at top touches element bottom ---
                 case 'modeToggle':
-                    ann.style.left = Math.max(8, absCenterX - 100) + 'px';
-                    ann.style.top = (absTop + r.height + 12) + 'px';
+                    ann.style.left = Math.max(8, centerX - ann.offsetWidth / 2) + 'px';
+                    ann.style.top = (absTop + r.height + 4) + 'px';
                     break;
 
                 case 'navBrand':
-                    ann.style.left = Math.max(8, absLeft) + 'px';
-                    ann.style.top = (absTop + r.height + 12) + 'px';
+                    ann.style.left = Math.max(8, centerX - ann.offsetWidth / 2) + 'px';
+                    ann.style.top = (absTop + r.height + 4) + 'px';
                     break;
 
-                // RIGHT of editor tabs, offset away
-                case 'editorTabs':
-                    ann.style.left = Math.min(vw - 280, absRight + 20) + 'px';
-                    ann.style.top = (absTop) + 'px';
-                    break;
-
-                // LEFT of the typed text
-                case 'typedText':
-                    ann.style.left = Math.max(8, absLeft - 290) + 'px';
-                    ann.style.top = (absTop - 5) + 'px';
-                    break;
-
-                // RIGHT of tagline
-                case 'heroTagline':
-                    ann.style.left = Math.min(vw - 280, absRight + 30) + 'px';
-                    ann.style.top = (absTop - 5) + 'px';
-                    break;
-
-                // BELOW the whiteboard button, arrow points up to it
                 case 'whiteboardBtn':
-                    ann.style.left = Math.max(8, absLeft - 20) + 'px';
-                    ann.style.top = (absTop + r.height + 12) + 'px';
+                    ann.style.left = Math.max(8, centerX - ann.offsetWidth / 2) + 'px';
+                    ann.style.top = (absTop + r.height + 4) + 'px';
                     break;
 
-                // RIGHT of social links row, aligned vertically
                 case 'socialLinks':
-                    ann.style.left = Math.max(8, absLeft + r.width + 15) + 'px';
-                    ann.style.top = (absTop) + 'px';
+                    ann.style.left = Math.max(8, centerX - ann.offsetWidth / 2) + 'px';
+                    ann.style.top = (absTop + r.height + 4) + 'px';
                     break;
 
-                // RIGHT of scroll hint
+                // --- RIGHT: arrow tip at left touches element right edge ---
+                case 'editorTabs':
+                    ann.style.left = Math.min(vw - 320, absLeft + r.width + 4) + 'px';
+                    ann.style.top = (absTop + r.height / 2 - 10) + 'px';
+                    break;
+
                 case 'scrollHint':
-                    ann.style.left = Math.min(vw - 250, absRight + 30) + 'px';
-                    ann.style.top = (absTop + 5) + 'px';
+                    ann.style.left = (absLeft + r.width + 10) + 'px';
+                    ann.style.top = (absTop - 5) + 'px';
                     break;
 
-                // FIXED corner float
+                case 'timeline':
+                    ann.style.left = Math.min(vw - 320, absLeft + r.width + 10) + 'px';
+                    ann.style.top = (absTop + 40) + 'px';
+                    break;
+
+                // --- LEFT: label then arrow, arrow tip at right touches element left ---
+                case 'typedText':
+                    ann.style.left = Math.max(8, absLeft - ann.offsetWidth - 4) + 'px';
+                    ann.style.top = (absTop - 5) + 'px';
+                    break;
+
+                case 'heroTagline':
+                    ann.style.left = Math.max(8, absLeft - ann.offsetWidth - 4) + 'px';
+                    ann.style.top = (absTop - 5) + 'px';
+                    break;
+
+                // --- ABOVE: label then arrow pointing down ---
+                case 'workGrid':
+                    ann.style.left = Math.max(8, absLeft + 20) + 'px';
+                    ann.style.top = (absTop - ann.offsetHeight - 4) + 'px';
+                    break;
+
+                case 'skillsGrid':
+                    ann.style.left = Math.max(8, absLeft + 20) + 'px';
+                    ann.style.top = (absTop - ann.offsetHeight - 4) + 'px';
+                    break;
+
+                case 'contactForm':
+                    ann.style.left = Math.max(8, absLeft + 20) + 'px';
+                    ann.style.top = (absTop - ann.offsetHeight - 4) + 'px';
+                    break;
+
+                // --- FIXED corner ---
                 case 'cursorGlow':
                     ann.style.position = 'fixed';
                     ann.style.right = '2rem';
@@ -219,28 +235,6 @@
                     ann.style.left = 'auto';
                     ann.style.top = 'auto';
                     return;
-
-                // RIGHT of timeline
-                case 'timeline':
-                    ann.style.left = Math.min(vw - 280, absRight + 30) + 'px';
-                    ann.style.top = (absTop + 30) + 'px';
-                    break;
-
-                // ABOVE the grids/form, centered
-                case 'workGrid':
-                    ann.style.left = Math.max(8, absLeft) + 'px';
-                    ann.style.top = (absTop - 60) + 'px';
-                    break;
-
-                case 'skillsGrid':
-                    ann.style.left = Math.max(8, absLeft) + 'px';
-                    ann.style.top = (absTop - 60) + 'px';
-                    break;
-
-                case 'contactForm':
-                    ann.style.left = Math.max(8, absLeft) + 'px';
-                    ann.style.top = (absTop - 60) + 'px';
-                    break;
             }
         });
     }

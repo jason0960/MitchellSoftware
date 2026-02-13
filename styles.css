@@ -1388,14 +1388,28 @@ body.whiteboard-on .wb-annotation {
 }
 
 .wb-arrow {
-    display: inline-block;
-    vertical-align: middle;
+    display: block;
     filter: drop-shadow(0 0 3px rgba(249, 99, 2, 0.2));
 }
 
-.wb-arrow-left {
-    margin-right: 4px;
+/* Vertical layouts: arrow + label stacked */
+.wb-below,
+.wb-above {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
+
+/* Horizontal layouts: arrow + label side by side */
+.wb-right,
+.wb-left {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.wb-right .wb-arrow { margin-right: 4px; }
+.wb-left .wb-arrow { margin-left: 4px; }
 
 @keyframes wb-fade-in {
     from { opacity: 0; transform: translateY(6px) scale(0.95); }
