@@ -9,17 +9,15 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 </head>
 <body>
-    <!-- Cursor glow effect -->
     <div class="cursor-glow" id="cursorGlow"></div>
 
-    <!-- Navigation -->
     <nav class="navbar">
         <div class="container">
-            <div class="nav-brand">
+            <div class="nav-brand" id="navBrand">
                 <span class="brand-bracket">{</span> JM <span class="brand-bracket">}</span>
             </div>
             <ul class="nav-menu" id="navMenu">
@@ -43,18 +41,34 @@
         </div>
     </nav>
 
-    <!-- Hero Section -->
     <section id="home" class="hero">
         <div class="hero-grid-bg"></div>
-        <div class="hero-content">
-
-            <!-- Creative Mode Hero -->
+        <div class="hero-content" id="heroContent">
             <div class="mode-content creative-only">
-                <div class="terminal-label">
-                    <span class="terminal-dot red"></span>
-                    <span class="terminal-dot yellow"></span>
-                    <span class="terminal-dot green"></span>
-                    <span class="terminal-text">jason@engineer ~ $</span>
+                <div class="editor-window">
+                    <div class="editor-titlebar">
+                        <span class="terminal-dot red"></span>
+                        <span class="terminal-dot yellow"></span>
+                        <span class="terminal-dot green"></span>
+                        <span class="editor-title">jason@engineer</span>
+                    </div>
+                    <div class="editor-tabs" id="editorTabs">
+                        <a href="#home" class="editor-tab active" data-ext="jsx">
+                            <span class="file-dot"></span> index.jsx
+                        </a>
+                        <a href="#journey" class="editor-tab" data-ext="ts">
+                            <span class="file-dot"></span> journey.ts
+                        </a>
+                        <a href="#work" class="editor-tab" data-ext="py">
+                            <span class="file-dot"></span> work.py
+                        </a>
+                        <a href="#skills" class="editor-tab" data-ext="json">
+                            <span class="file-dot"></span> skills.json
+                        </a>
+                        <a href="#contact" class="editor-tab" data-ext="sh">
+                            <span class="file-dot"></span> contact.sh
+                        </a>
+                    </div>
                 </div>
                 <h1 class="hero-title">
                     <span class="line-number">01</span> Jason Mitchell
@@ -65,12 +79,10 @@
                 <p class="hero-description">
                     <span class="line-number">03</span> <span class="comment">// From bootcamp to building enterprise systems at scale</span>
                 </p>
-                <p class="hero-tagline">
+                <p class="hero-tagline" id="heroTagline">
                     <span class="line-number">04</span> <span class="keyword">const</span> <span class="variable">focus</span> = <span class="string">"Inventory Planning & Replenishment"</span>;
                 </p>
             </div>
-
-            <!-- Professional Mode Hero -->
             <div class="mode-content professional-only">
                 <p class="pro-overline">The Home Depot &mdash; IPR HealthTech Systems</p>
                 <h1 class="hero-title pro-title">Jason Mitchell</h1>
@@ -85,19 +97,21 @@
                 <a href="#contact" class="btn btn-outline">
                     <i class="fas fa-paper-plane"></i> Get In Touch
                 </a>
+                <button class="btn btn-outline" id="whiteboardBtn">
+                    <i class="fas fa-chalkboard"></i> Whiteboard
+                </button>
             </div>
-            <div class="social-links">
+            <div class="social-links" id="socialLinks">
                 <a href="https://github.com/jason0960" target="_blank" aria-label="GitHub"><i class="fab fa-github"></i></a>
                 <a href="https://www.linkedin.com/in/jason-mitchell-b39a4418b" target="_blank" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
                 <a href="mailto:jasonmitchell096@gmail.com" aria-label="Email"><i class="fas fa-envelope"></i></a>
             </div>
         </div>
-        <div class="scroll-indicator">
+        <div class="scroll-indicator" id="scrollHint">
             <a href="#journey"><i class="fas fa-chevron-down"></i></a>
         </div>
     </section>
 
-    <!-- Journey / Timeline Section -->
     <section id="journey" class="journey">
         <div class="container">
             <h2 class="section-title">
@@ -105,7 +119,7 @@
             </h2>
             <p class="section-subtitle creative-only">My path from bootcamp to enterprise engineering at The Home Depot</p>
             <p class="section-subtitle professional-only">Professional experience and career progression at The Home Depot</p>
-            <div class="timeline">
+            <div class="timeline" id="timeline">
                 <div class="timeline-item" data-aos="fade-right">
                     <div class="timeline-marker">
                         <i class="fas fa-graduation-cap"></i>
@@ -143,7 +157,6 @@
         </div>
     </section>
 
-    <!-- Work / Contributions Section -->
     <section id="work" class="work">
         <div class="container">
             <h2 class="section-title">
@@ -151,7 +164,7 @@
             </h2>
             <p class="section-subtitle creative-only">Enterprise contributions in Inventory Planning & Replenishment</p>
             <p class="section-subtitle professional-only">Delivered measurable impact across enterprise applications and infrastructure</p>
-            <div class="work-grid">
+            <div class="work-grid" id="workGrid">
                 <div class="work-card">
                     <div class="work-card-icon">
                         <i class="fab fa-java"></i>
@@ -234,7 +247,6 @@
         </div>
     </section>
 
-    <!-- Skills Section -->
     <section id="skills" class="skills">
         <div class="container">
             <h2 class="section-title">
@@ -242,7 +254,7 @@
             </h2>
             <p class="section-subtitle creative-only">Technologies and tools I work with daily</p>
             <p class="section-subtitle professional-only">Core technologies and methodologies applied in enterprise environments</p>
-            <div class="skills-grid">
+            <div class="skills-grid" id="skillsGrid">
                 <div class="skill-category">
                     <div class="skill-icon"><i class="fas fa-server"></i></div>
                     <h3>Backend</h3>
@@ -291,7 +303,6 @@
         </div>
     </section>
 
-    <!-- Contact Section -->
     <section id="contact" class="contact">
         <div class="container">
             <h2 class="section-title">
@@ -344,7 +355,6 @@
         </div>
     </section>
 
-    <!-- Footer -->
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
@@ -362,6 +372,109 @@
         </div>
     </footer>
 
-    <script src="script.js"></script>
+    <div class="wb-overlay" id="wbOverlay">
+        <!-- 1 — Mode toggle: label BELOW, arrow points UP to toggle -->
+        <div class="wb-annotation wb-below" data-target="modeToggle">
+            <svg class="wb-arrow" viewBox="0 0 30 40" width="30" height="40">
+                <polygon points="15,2 11,10 19,10" fill="var(--accent)" />
+                <path d="M15 10 Q13 25, 15 38" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
+            </svg>
+            <span class="wb-label">State toggle — flips the entire<br>page theme using setState()</span>
+        </div>
+        <!-- 2 — Nav brand: label BELOW, arrow points UP to brand -->
+        <div class="wb-annotation wb-below" data-target="navBrand">
+            <svg class="wb-arrow" viewBox="0 0 30 40" width="30" height="40">
+                <polygon points="15,2 11,10 19,10" fill="var(--accent)" />
+                <path d="M15 10 Q13 25, 15 38" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
+            </svg>
+            <span class="wb-label">Brand component — renders<br>the site identity mark</span>
+        </div>
+        <!-- 3 — Editor tabs: label RIGHT, arrow points LEFT to tabs -->
+        <div class="wb-annotation wb-right" data-target="editorTabs">
+            <svg class="wb-arrow" viewBox="0 0 50 20" width="50" height="20">
+                <polygon points="2,10 10,6 10,14" fill="var(--accent)" />
+                <path d="M10 10 Q30 5, 48 10" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
+            </svg>
+            <span class="wb-label">Tab navigation — each tab routes<br>to a page section via scroll</span>
+        </div>
+        <!-- 4 — Typed text: label LEFT, arrow points RIGHT to text -->
+        <div class="wb-annotation wb-left" data-target="typedText">
+            <span class="wb-label">Typing animation — a subscriber<br>that auto-cycles through job titles</span>
+            <svg class="wb-arrow" viewBox="0 0 50 20" width="50" height="20">
+                <path d="M2 10 Q20 5, 40 10" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
+                <polygon points="48,10 40,6 40,14" fill="var(--accent)" />
+            </svg>
+        </div>
+        <!-- 5 — Hero tagline: label LEFT, arrow points RIGHT -->
+        <div class="wb-annotation wb-left" data-target="heroTagline">
+            <span class="wb-label">Inline code styling — shows my<br>current focus area as a variable</span>
+            <svg class="wb-arrow" viewBox="0 0 50 20" width="50" height="20">
+                <path d="M2 10 Q20 5, 40 10" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
+                <polygon points="48,10 40,6 40,14" fill="var(--accent)" />
+            </svg>
+        </div>
+        <!-- 6 — Whiteboard button: label BELOW, arrow points UP -->
+        <div class="wb-annotation wb-below" data-target="whiteboardBtn">
+            <svg class="wb-arrow" viewBox="0 0 30 40" width="30" height="40">
+                <polygon points="15,2 11,10 19,10" fill="var(--accent)" />
+                <path d="M15 10 Q13 25, 15 38" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
+            </svg>
+            <span class="wb-label">You clicked this! Toggles the<br>whiteboard state on &amp; off</span>
+        </div>
+        <!-- 7 — Social links: label BELOW, arrow points UP -->
+        <div class="wb-annotation wb-below" data-target="socialLinks">
+            <svg class="wb-arrow" viewBox="0 0 30 40" width="30" height="40">
+                <polygon points="15,2 11,10 19,10" fill="var(--accent)" />
+                <path d="M15 10 Q13 25, 15 38" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
+            </svg>
+            <span class="wb-label">External links — GitHub,<br>LinkedIn &amp; email</span>
+        </div>
+        <!-- 8 — Scroll hint: label RIGHT, arrow points LEFT -->
+        <div class="wb-annotation wb-right" data-target="scrollHint">
+            <svg class="wb-arrow" viewBox="0 0 50 20" width="50" height="20">
+                <polygon points="2,10 10,6 10,14" fill="var(--accent)" />
+                <path d="M10 10 Q30 5, 48 10" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
+            </svg>
+            <span class="wb-label">Scroll cue — guides the user<br>to explore below the fold</span>
+        </div>
+        <!-- 9 — Cursor glow (floating) -->
+        <div class="wb-annotation" data-target="cursorGlow">
+            <span class="wb-label wb-label-float">Cursor glow — a visual effect<br>that tracks mousemove events</span>
+        </div>
+        <!-- 10 — Timeline: label RIGHT, arrow points LEFT -->
+        <div class="wb-annotation wb-right" data-target="timeline">
+            <svg class="wb-arrow" viewBox="0 0 50 20" width="50" height="20">
+                <polygon points="2,10 10,6 10,14" fill="var(--accent)" />
+                <path d="M10 10 Q30 5, 48 10" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
+            </svg>
+            <span class="wb-label">Career timeline — rendered with<br>CSS grid &amp; scroll-triggered reveals</span>
+        </div>
+        <!-- 11 — Work grid: label ABOVE, arrow points DOWN -->
+        <div class="wb-annotation wb-above" data-target="workGrid">
+            <span class="wb-label">Project cards — real features I've<br>shipped at The Home Depot</span>
+            <svg class="wb-arrow" viewBox="0 0 30 40" width="30" height="40">
+                <path d="M15 2 Q13 18, 15 30" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
+                <polygon points="15,38 11,30 19,30" fill="var(--accent)" />
+            </svg>
+        </div>
+        <!-- 12 — Skills grid: label ABOVE, arrow points DOWN -->
+        <div class="wb-annotation wb-above" data-target="skillsGrid">
+            <span class="wb-label">Tech stack — languages, frameworks<br>&amp; tools grouped by category</span>
+            <svg class="wb-arrow" viewBox="0 0 30 40" width="30" height="40">
+                <path d="M15 2 Q13 18, 15 30" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
+                <polygon points="15,38 11,30 19,30" fill="var(--accent)" />
+            </svg>
+        </div>
+        <!-- 13 — Contact form: label ABOVE, arrow points DOWN -->
+        <div class="wb-annotation wb-above" data-target="contactForm">
+            <span class="wb-label">Contact form — sends messages<br>via EmailJS to my inbox</span>
+            <svg class="wb-arrow" viewBox="0 0 30 40" width="30" height="40">
+                <path d="M15 2 Q13 18, 15 30" stroke="var(--accent)" stroke-width="2" fill="none" stroke-dasharray="4 3" />
+                <polygon points="15,38 11,30 19,30" fill="var(--accent)" />
+            </svg>
+        </div>
+    </div>
+
+    <script src="script.js?v=3"></script>
 </body>
 </html>

@@ -15,16 +15,16 @@
     // ============================================
     const AppState = {
         _state: {
-            mode: 'creative',       // 'creative' | 'professional'
+            mode: 'creative',
             scrolled: false,
             mobileMenuOpen: false,
             activeSection: 'home',
-            typingActive: true
+            typingActive: true,
+            whiteboard: false
         },
 
         _subscribers: [],
 
-        // Props — derived values computed from state
         get props() {
             const s = this._state;
             return Object.freeze({
@@ -35,17 +35,16 @@
                 mobileMenuOpen: s.mobileMenuOpen,
                 activeSection: s.activeSection,
                 typingActive: s.typingActive && s.mode === 'creative',
+                whiteboard: s.whiteboard && s.mode === 'creative',
                 modeLabel: s.mode === 'creative' ? 'Creative' : 'Professional',
                 bodyClass: s.mode === 'professional' ? 'professional' : ''
             });
         },
 
-        // Get raw state value
         get(key) {
             return this._state[key];
         },
 
-        // Update state and notify subscribers
         setState(updates) {
             const prev = { ...this._state };
             let changed = false;
@@ -64,7 +63,6 @@
             }
         },
 
-        // Subscribe to state changes
         subscribe(fn) {
             this._subscribers.push(fn);
             return () => {
@@ -72,28 +70,27 @@
             };
         },
 
-        // Toggle a boolean state value
         toggle(key) {
             this.setState({ [key]: !this._state[key] });
         }
     };
 
     // ============================================
-    // Renderers — subscribe to state, update DOM
+    // Renderers
     // ============================================
 
-    // --- Mode Renderer ---
     function renderMode(props, changed) {
         if (!changed.includes('mode')) return;
 
-        // Update body class
         document.body.classList.toggle('professional', props.isProfessional);
 
-        // Update toggle label
+        if (props.isProfessional && AppState.get('whiteboard')) {
+            AppState.setState({ whiteboard: false });
+        }
+
         const label = $('#modeLabel');
         if (label) label.textContent = props.modeLabel;
 
-        // Swap hero button content
         const heroBtn = $('#heroBtn');
         if (heroBtn) {
             if (props.isProfessional) {
@@ -103,11 +100,9 @@
             }
         }
 
-        // Persist preference
         localStorage.setItem('jm-portfolio-mode', props.mode);
     }
 
-    // --- Navbar Renderer ---
     function renderNavbar(props, changed) {
         if (changed.includes('scrolled')) {
             const navbar = $('nav.navbar');
@@ -120,6 +115,11 @@
                     link.getAttribute('href') === '#' + props.activeSection
                 );
             });
+            $$('.editor-tab').forEach(tab => {
+                tab.classList.toggle('active',
+                    tab.getAttribute('href') === '#' + props.activeSection
+                );
+            });
         }
 
         if (changed.includes('mobileMenuOpen')) {
@@ -130,13 +130,124 @@
         }
     }
 
-    // Subscribe renderers
+    function renderWhiteboard(props, changed) {
+        if (!changed.includes('whiteboard') && !changed.includes('mode')) return;
+
+        document.body.classList.toggle('whiteboard-on', props.whiteboard);
+
+        const btn = $('#whiteboardBtn');
+        if (btn) btn.classList.toggle('active', props.whiteboard);
+
+        if (props.whiteboard) {
+            const overlay = document.getElementById('wbOverlay');
+            if (overlay) overlay.style.height = document.documentElement.scrollHeight + 'px';
+            requestAnimationFrame(positionAnnotations);
+        }
+    }
+
+    function positionAnnotations() {
+        const annotations = $$('.wb-annotation[data-target]');
+        const scrollY = window.scrollY;
+        const vw = window.innerWidth;
+
+        annotations.forEach(ann => {
+            const targetId = ann.dataset.target;
+            const target = document.getElementById(targetId);
+            if (!target) return;
+
+            const r = target.getBoundingClientRect();
+            const absTop = r.top + scrollY;
+            const absLeft = r.left;
+            const centerX = absLeft + r.width / 2;
+
+            ann.style.position = 'absolute';
+
+            switch (targetId) {
+                // --- BELOW: arrow tip at top touches element bottom ---
+                case 'modeToggle':
+                    ann.style.left = Math.max(8, centerX - ann.offsetWidth / 2) + 'px';
+                    ann.style.top = (absTop + r.height + 4) + 'px';
+                    break;
+
+                case 'navBrand':
+                    ann.style.left = Math.max(8, centerX - ann.offsetWidth / 2) + 'px';
+                    ann.style.top = (absTop + r.height + 4) + 'px';
+                    break;
+
+                case 'whiteboardBtn':
+                    ann.style.left = Math.max(8, centerX - ann.offsetWidth / 2) + 'px';
+                    ann.style.top = (absTop + r.height + 4) + 'px';
+                    break;
+
+                case 'socialLinks':
+                    ann.style.left = Math.max(4, absLeft) + 'px';
+                    ann.style.top = (absTop + r.height + 4) + 'px';
+                    break;
+
+                // --- RIGHT: arrow tip at left touches element right edge ---
+                case 'editorTabs':
+                    ann.style.left = Math.min(vw - 320, absLeft + r.width + 4) + 'px';
+                    ann.style.top = (absTop + r.height / 2 - 10) + 'px';
+                    break;
+
+                case 'scrollHint':
+                    ann.style.left = (absLeft + r.width + 10) + 'px';
+                    ann.style.top = (absTop - 5) + 'px';
+                    break;
+
+                case 'timeline':
+                    ann.style.left = Math.min(vw - 320, absLeft + r.width + 10) + 'px';
+                    ann.style.top = (absTop + 40) + 'px';
+                    break;
+
+                // --- LEFT: label then arrow, arrow tip at right touches element left ---
+                case 'typedText':
+                    ann.style.left = Math.max(8, absLeft - ann.offsetWidth - 4) + 'px';
+                    ann.style.top = (absTop - 5) + 'px';
+                    break;
+
+                case 'heroTagline':
+                    ann.style.left = Math.max(8, absLeft - ann.offsetWidth - 4) + 'px';
+                    ann.style.top = (absTop - 5) + 'px';
+                    break;
+
+                // --- ABOVE: label then arrow pointing down ---
+                case 'workGrid':
+                    ann.style.left = Math.max(8, absLeft + 20) + 'px';
+                    ann.style.top = (absTop - ann.offsetHeight - 4) + 'px';
+                    break;
+
+                case 'skillsGrid':
+                    ann.style.left = Math.max(8, absLeft + 20) + 'px';
+                    ann.style.top = (absTop - ann.offsetHeight - 4) + 'px';
+                    break;
+
+                case 'contactForm':
+                    ann.style.left = (absLeft + r.width * 0.55) + 'px';
+                    ann.style.top = (absTop - ann.offsetHeight - 4) + 'px';
+                    break;
+
+                // --- FIXED corner ---
+                case 'cursorGlow':
+                    ann.style.position = 'fixed';
+                    ann.style.right = '2rem';
+                    ann.style.bottom = '3rem';
+                    ann.style.left = 'auto';
+                    ann.style.top = 'auto';
+                    return;
+            }
+        });
+    }
+
+    window.addEventListener('resize', () => {
+        if (AppState.props.whiteboard) requestAnimationFrame(positionAnnotations);
+    });
+
     AppState.subscribe(renderMode);
     AppState.subscribe(renderNavbar);
+    AppState.subscribe(renderWhiteboard);
 
-    // ============================================
-    // Typing Effect — controlled by state
-    // ============================================
+    // Typing effect
     const typedEl = $('#typedText');
     let typingTimeout = null;
 
@@ -146,7 +257,7 @@
             'Java & React Developer',
             'Full Stack Engineer',
             'Python Automation Builder',
-            'DevOps & CI/CD Contributor'
+            'DevOps & CI/CD Designer'
         ];
         let stringIndex = 0;
         let charIndex = 0;
@@ -157,7 +268,6 @@
         const pauseStart = 500;
 
         function type() {
-            // Only run in creative mode
             if (!AppState.props.typingActive) {
                 typingTimeout = setTimeout(type, 500);
                 return;
@@ -187,9 +297,7 @@
         setTimeout(type, 1000);
     }
 
-    // ============================================
-    // Cursor Glow — only in creative mode
-    // ============================================
+    // Cursor glow (creative mode only)
     const glow = $('#cursorGlow');
     if (glow) {
         document.addEventListener('mousemove', (e) => {
@@ -200,11 +308,7 @@
         });
     }
 
-    // ============================================
-    // Event Handlers — dispatch state updates
-    // ============================================
-
-    // --- Scroll Handler ---
+    // Scroll tracking
     let scrollTicking = false;
     window.addEventListener('scroll', () => {
         if (!scrollTicking) {
@@ -230,7 +334,7 @@
         }
     });
 
-    // --- Mode Toggle ---
+    // Mode toggle
     const toggleBtn = $('#modeToggle');
     if (toggleBtn) {
         toggleBtn.addEventListener('click', () => {
@@ -239,7 +343,15 @@
         });
     }
 
-    // --- Mobile Menu ---
+    // Whiteboard toggle
+    const wbBtn = $('#whiteboardBtn');
+    if (wbBtn) {
+        wbBtn.addEventListener('click', () => {
+            AppState.toggle('whiteboard');
+        });
+    }
+
+    // Mobile menu
     const hamburger = $('#hamburger');
     const navMenu = $('#navMenu');
 
@@ -255,7 +367,7 @@
         });
     }
 
-    // --- Smooth Scroll ---
+    // Smooth scroll
     $$('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();
@@ -269,9 +381,7 @@
         });
     });
 
-    // ============================================
-    // Intersection Observer Reveals
-    // ============================================
+    // Reveal animations
     const revealObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -286,14 +396,11 @@
         revealObserver.observe(el);
     });
 
-    // ============================================
-    // Contact Form — EmailJS Integration
-    // ============================================
+    // EmailJS
     const EMAILJS_PUBLIC_KEY = 'ImyXAHd9l808uQoki';
     const EMAILJS_SERVICE_ID = 'service_k5gog04';
     const EMAILJS_TEMPLATE_ID = 'template_a2sf6bc';
 
-    // Initialize EmailJS
     if (window.emailjs) {
         emailjs.init(EMAILJS_PUBLIC_KEY);
     }
@@ -305,7 +412,6 @@
             const btn = form.querySelector('.btn-primary');
             const origHTML = btn.innerHTML;
 
-            // Disable button while sending
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
 
@@ -341,17 +447,12 @@
         });
     }
 
-    // ============================================
-    // Initialize — restore saved mode
-    // ============================================
+    // Restore saved mode
     const savedMode = localStorage.getItem('jm-portfolio-mode');
     if (savedMode === 'professional' || savedMode === 'creative') {
         AppState.setState({ mode: savedMode });
     }
 
-    // ============================================
-    // Console Signature
-    // ============================================
     console.log(
         '%c{ JM }',
         'font-size: 28px; font-weight: 700; color: #F96302; font-family: monospace;'
