@@ -212,6 +212,7 @@ body:hover .cursor-glow {
     position: relative;
     z-index: 1;
     max-width: 800px;
+    width: 100%;
 }
 
 .terminal-label {
@@ -366,6 +367,8 @@ body:hover .cursor-glow {
     font-family: var(--font-mono);
     font-size: 0.9rem;
     margin-bottom: 0.5rem;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 .comment { color: var(--syntax-comment); }
@@ -969,6 +972,23 @@ section {
 
     .hero-title {
         font-size: 2.4rem;
+    }
+
+    .hero-content {
+        max-width: 100%;
+        overflow: hidden;
+    }
+
+    .hero-description, .hero-tagline {
+        font-size: 0.7rem;
+    }
+
+    .hero-subtitle {
+        font-size: 0.95rem;
+    }
+
+    .line-number {
+        margin-right: 0.5rem;
     }
 
     .editor-tab {

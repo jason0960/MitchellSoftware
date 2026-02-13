@@ -447,19 +447,89 @@
         });
     }
 
-    // Restore saved mode
+    // ============================================
+    // Initialize — restore saved mode
+    // ============================================
     const savedMode = localStorage.getItem('jm-portfolio-mode');
     if (savedMode === 'professional' || savedMode === 'creative') {
         AppState.setState({ mode: savedMode });
     }
 
+    // ============================================
+    // Console Signature
+    // ============================================
     console.log(
         '%c{ JM }',
         'font-size: 28px; font-weight: 700; color: #F96302; font-family: monospace;'
     );
     console.log(
-        '%cJason Mitchell — Software Engineer @ The Home Depot',
+        '%cJason Mitchell — Software Engineer',
         'font-size: 12px; color: #7d8590; font-family: system-ui;'
     );
 
+    // ============================================
+    // Prometheus Tracking — Portfolio Analytics
+    // ============================================
+    const API_BASE = 'https://mitchellsoftwareportfolio.onrender.com';
+
+    function trackEvent(event) {
+        fetch(`${API_BASE}/api/track`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            mode: 'cors',
+            body: JSON.stringify({ event }),
+        }).catch(() => {});
+    }
+
+    // Track portfolio page view (once per session)
+    if (!sessionStorage.getItem('tracked-portfolio-view')) {
+        trackEvent('portfolio_view');
+        sessionStorage.setItem('tracked-portfolio-view', '1');
+    }
+
+    // Fetch and display live stats
+    function loadStats() {
+        fetch(`${API_BASE}/api/stats`, { mode: 'cors' })
+            .then(r => r.json())
+            .then(data => {
+                const el = (id, val) => {
+                    const e = document.getElementById(id);
+                    if (e) e.textContent = typeof val === 'number' ? val.toLocaleString() : val;
+                };
+                el('statViews', data.portfolio_views || 0);
+                el('statDemos', data.demo_views || 0);
+                el('statPdfs', data.pdf_generations || 0);
+                el('statVotes', data.resume_enjoyed || 0);
+
+                // Health metrics
+                if (data.health) {
+                    el('statUptime', data.health.uptime_display || '—');
+                    el('statMemory', data.health.memory_mb || '—');
+                    el('statCpu', data.health.cpu_percent + '%');
+                    el('statSessions', data.health.active_sessions || 0);
+                }
+            })
+            .catch(() => {});
+    }
+    loadStats();
+
+    // "Enjoyed this?" vote button
+    const enjoyedBtn = document.getElementById('enjoyedBtn');
+    if (enjoyedBtn) {
+        if (localStorage.getItem('jm-enjoyed-voted')) {
+            enjoyedBtn.innerHTML = '<i class="fas fa-check"></i> Thanks!';
+            enjoyedBtn.classList.add('voted');
+            enjoyedBtn.disabled = true;
+        }
+        enjoyedBtn.addEventListener('click', () => {
+            trackEvent('resume_enjoyed');
+            enjoyedBtn.innerHTML = '<i class="fas fa-check"></i> Thanks!';
+            enjoyedBtn.classList.add('voted');
+            enjoyedBtn.disabled = true;
+            localStorage.setItem('jm-enjoyed-voted', '1');
+            setTimeout(loadStats, 500);
+        });
+    }
+
 })();
+
