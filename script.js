@@ -180,7 +180,7 @@
                     break;
 
                 case 'socialLinks':
-                    ann.style.left = Math.max(8, centerX - ann.offsetWidth / 2) + 'px';
+                    ann.style.left = Math.max(4, absLeft) + 'px';
                     ann.style.top = (absTop + r.height + 4) + 'px';
                     break;
 
@@ -223,7 +223,7 @@
                     break;
 
                 case 'contactForm':
-                    ann.style.left = Math.max(8, absLeft + 20) + 'px';
+                    ann.style.left = (absLeft + r.width * 0.55) + 'px';
                     ann.style.top = (absTop - ann.offsetHeight - 4) + 'px';
                     break;
 
@@ -257,7 +257,7 @@
             'Java & React Developer',
             'Full Stack Engineer',
             'Python Automation Builder',
-            'DevOps & CI/CD Contributor'
+            'DevOps & CI/CD Designer'
         ];
         let stringIndex = 0;
         let charIndex = 0;
