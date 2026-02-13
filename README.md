@@ -8,7 +8,7 @@ A modern, responsive portfolio website showcasing my work as a Software Engineer
 
 ## 🪵 Lumber Yard Restock Planner — Interactive Demo
 
-**[Live Demo →](https://lumber-yard-restock-planner.onrender.com)**
+**[Live Demo →](https://mitchellsoftwareportfolio.onrender.com)**
 
 A 3D interactive lumber yard demo built to showcase PDF automation and full-stack engineering skills.
 
