@@ -1,13 +1,14 @@
 """
 Lumber Yard Restock Planner — Flask PDF Server
 Generates incoming delivery restock order PDFs with ReportLab.
+Exposes Prometheus /metrics endpoint for observability.
 """
 import io
 import base64
 import json
 from datetime import datetime
 
-from flask import Flask, request, send_file, jsonify
+from flask import Flask, request, send_file, jsonify, Response
 from flask_cors import CORS
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter, landscape
@@ -18,9 +19,68 @@ from reportlab.platypus import (
     PageBreak, HRFlowable
 )
 from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
+from prometheus_client import Counter, generate_latest, CONTENT_TYPE_LATEST
 
 app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app)
+
+# ─── Prometheus Counters ───────────────────────────────────────
+PORTFOLIO_VIEWS = Counter(
+    'portfolio_page_views_total',
+    'Total views of the main portfolio page'
+)
+DEMO_VIEWS = Counter(
+    'demo_page_views_total',
+    'Total views of the Lumber Yard Restock Planner demo'
+)
+PDF_GENERATIONS = Counter(
+    'pdf_generations_total',
+    'Total PDF restock orders generated'
+)
+CONTACT_SUBMISSIONS = Counter(
+    'contact_form_submissions_total',
+    'Total contact form submissions'
+)
+RESUME_ENJOYED = Counter(
+    'resume_enjoyed_votes_total',
+    'Total \"Enjoyed this resume\" votes'
+)
+
+
+@app.route('/metrics')
+def metrics():
+    return Response(generate_latest(), mimetype=CONTENT_TYPE_LATEST)
+
+
+@app.route('/api/track', methods=['POST'])
+def track_event():
+    data = request.get_json(silent=True) or {}
+    event = data.get('event', '')
+
+    counter_map = {
+        'portfolio_view': PORTFOLIO_VIEWS,
+        'demo_view': DEMO_VIEWS,
+        'pdf_generated': PDF_GENERATIONS,
+        'contact_submit': CONTACT_SUBMISSIONS,
+        'resume_enjoyed': RESUME_ENJOYED,
+    }
+
+    counter = counter_map.get(event)
+    if counter:
+        counter.inc()
+        return jsonify({'ok': True, 'event': event})
+    return jsonify({'ok': False, 'error': 'unknown event'}), 400
+
+
+@app.route('/api/stats')
+def get_stats():
+    return jsonify({
+        'portfolio_views': int(PORTFOLIO_VIEWS._value.get()),
+        'demo_views': int(DEMO_VIEWS._value.get()),
+        'pdf_generations': int(PDF_GENERATIONS._value.get()),
+        'contact_submissions': int(CONTACT_SUBMISSIONS._value.get()),
+        'resume_enjoyed': int(RESUME_ENJOYED._value.get()),
+    })
 
 
 @app.route('/')
