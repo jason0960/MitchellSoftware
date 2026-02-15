@@ -685,6 +685,25 @@ def admin_chat_stats():
     })
 
 
+@app.route('/admin/clear-logs', methods=['POST'])
+def admin_clear_logs():
+    """Delete all chat logs. Protected by ADMIN_TOKEN."""
+    token = request.args.get('token', '')
+    expected = os.environ.get('ADMIN_TOKEN', '')
+
+    if not expected or token != expected:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    conn = sqlite3.connect(CHAT_DB_PATH)
+    c = conn.cursor()
+    c.execute('DELETE FROM messages')
+    c.execute('DELETE FROM conversations')
+    conn.commit()
+    conn.close()
+
+    return jsonify({'ok': True, 'message': 'All chat logs cleared.'})
+
+
 # ─── Routes: Health ────────────────────────────────────────────
 
 @app.route('/health')
