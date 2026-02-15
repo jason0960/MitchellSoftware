@@ -223,7 +223,7 @@ function createBunkMesh(bunk, rowIndex) {
         group.add(sticker);
     }
 
-    // Vertical rack posts (HD orange steel)
+    // Vertical rack posts (orange steel)
     const postH = 7;
     const postGeo = new THREE.BoxGeometry(0.2, postH, 0.2);
     const postMat = new THREE.MeshStandardMaterial({ color: 0xF96302, roughness: 0.5, metalness: 0.4 });

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="12" fill="#0a0e17"/>
+  <!-- Bottom board -->
+  <rect x="10" y="40" width="44" height="7" rx="1.5" fill="#d4a056"/>
+  <rect x="10" y="40" width="44" height="7" rx="1.5" fill="none" stroke="#b8863a" stroke-width="0.8"/>
+  <line x1="18" y1="40" x2="20" y2="47" stroke="#c49245" stroke-width="0.5"/>
+  <line x1="35" y1="40" x2="33" y2="47" stroke="#c49245" stroke-width="0.5"/>
+  <!-- Middle board -->
+  <rect x="10" y="30" width="44" height="7" rx="1.5" fill="#c49245"/>
+  <rect x="10" y="30" width="44" height="7" rx="1.5" fill="none" stroke="#a87a35" stroke-width="0.8"/>
+  <line x1="25" y1="30" x2="27" y2="37" stroke="#b8863a" stroke-width="0.5"/>
+  <line x1="42" y1="30" x2="40" y2="37" stroke="#b8863a" stroke-width="0.5"/>
+  <!-- Top board -->
+  <rect x="10" y="20" width="44" height="7" rx="1.5" fill="#d4a056"/>
+  <rect x="10" y="20" width="44" height="7" rx="1.5" fill="none" stroke="#b8863a" stroke-width="0.8"/>
+  <line x1="15" y1="20" x2="17" y2="27" stroke="#c49245" stroke-width="0.5"/>
+  <line x1="38" y1="20" x2="36" y2="27" stroke="#c49245" stroke-width="0.5"/>
+</svg>
