@@ -102,6 +102,11 @@ REQUEST_LATENCY = Histogram(
 _visitor_log = {}  # { ip: last_seen_timestamp }
 SESSION_WINDOW = 900  # 15 minutes
 
+# ─── Rate Limiting (chat) ─────────────────────────────────────
+_chat_rate = {}  # { ip: [timestamp, timestamp, ...] }
+CHAT_RATE_LIMIT = 10       # max messages per window
+CHAT_RATE_WINDOW = 60      # window in seconds
+
 # ─── SQLite Chat Log Database ──────────────────────────────────
 # Use persistent disk on Render (/data), fallback to project root locally
 _db_dir = os.environ.get('CHAT_DB_DIR', ROOT_DIR)
@@ -182,6 +187,19 @@ def _track_visitor(ip):
     ACTIVE_SESSIONS.set(len(_visitor_log))
 
 
+def _check_chat_rate(ip):
+    """Return True if the IP is within rate limits, False if exceeded."""
+    now = time.time()
+    cutoff = now - CHAT_RATE_WINDOW
+    if ip not in _chat_rate:
+        _chat_rate[ip] = []
+    _chat_rate[ip] = [t for t in _chat_rate[ip] if t > cutoff]
+    if len(_chat_rate[ip]) >= CHAT_RATE_LIMIT:
+        return False
+    _chat_rate[ip].append(now)
+    return True
+
+
 @app.before_request
 def before_request():
     request._start_time = time.time()
@@ -205,12 +223,12 @@ def after_request(response):
 
 @app.route('/')
 def index():
-    return app.send_static_file('demo/pallet-builder.html')
-
-
-@app.route('/portfolio')
-def portfolio():
     return app.send_static_file('index.html')
+
+
+@app.route('/demo')
+def demo():
+    return app.send_static_file('demo/pallet-builder.html')
 
 
 # ─── Routes: Metrics & Tracking ───────────────────────────────
@@ -508,8 +526,13 @@ def chat():
     if not message:
         return jsonify({'error': 'Please provide a message.'}), 400
 
-    now = datetime.utcnow().isoformat()
     ip = request.remote_addr or 'unknown'
+
+    # Rate limiting
+    if not _check_chat_rate(ip):
+        return jsonify({'error': 'Please slow down — you can send up to 10 messages per minute.'}), 429
+
+    now = datetime.utcnow().isoformat()
 
     conn = sqlite3.connect(CHAT_DB_PATH)
     c = conn.cursor()
@@ -569,10 +592,14 @@ def chat():
         reply = response.choices[0].message.content.strip()
     except ValueError as e:
         conn.close()
-        return jsonify({'error': str(e)}), 503
+        return jsonify({
+            'error': 'Jason\'s AI is getting set up — please reach out directly at jasonmitchell096@gmail.com in the meantime!'
+        }), 503
     except Exception as e:
         conn.close()
-        return jsonify({'error': f'AI service temporarily unavailable: {str(e)}'}), 503
+        return jsonify({
+            'error': 'Jason\'s AI is taking a quick break. Feel free to reach out directly at jasonmitchell096@gmail.com or connect on LinkedIn!'
+        }), 503
 
     reply_time = datetime.utcnow().isoformat()
     c.execute(

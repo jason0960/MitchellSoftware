@@ -31,8 +31,8 @@ This project is deployed as a single **Render Web Service** that serves both the
 
 | URL | Page |
 |---|---|
-| `https://<service>.onrender.com/` | Lumber Yard Restock Planner (demo) |
-| `https://<service>.onrender.com/portfolio` | Portfolio page |
+| `https://<service>.onrender.com/` | Portfolio page |
+| `https://<service>.onrender.com/demo` | Lumber Yard Restock Planner (demo) |
 | `https://<service>.onrender.com/health` | Health check |
 | `https://<service>.onrender.com/metrics` | Prometheus metrics |
 | `https://<service>.onrender.com/admin/chat-logs?token=…` | Chat logs |
@@ -61,7 +61,7 @@ export ADMIN_TOKEN="your-secret"
 python -m server.app
 ```
 
-Open `http://localhost:5000/` (demo) or `http://localhost:5000/portfolio` (portfolio).
+Open `http://localhost:5000/` (portfolio) or `http://localhost:5000/demo` (lumber yard demo).
 
 ## Custom Domain (Optional)
 
