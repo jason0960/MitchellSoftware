@@ -37,13 +37,13 @@
     },
     {
       "area": "PDF Automation Solution",
-      "detail": "Implemented a Python-based PDF generation solution to automate and standardize production container documentation, replacing manual processes.",
-      "technologies": ["Python", "Automation", "PDF Generation"]
+      "detail": "Built a PDF generation solution using Google Cloud Run Functions to automate and standardize production container documentation, replacing manual processes.",
+      "technologies": ["Python", "Google Cloud Run Functions", "Automation", "PDF Generation"]
     },
     {
       "area": "Deployment Workflows",
-      "detail": "Designed and created multiple production deployment workflows for legacy applications, improving release reliability and repeatability across the team.",
-      "technologies": ["CI/CD", "DevOps", "Legacy Systems"]
+      "detail": "Designed and created multiple production deployment workflows using Spinnaker, migrating legacy applications off PCF onto modern deployment infrastructure.",
+      "technologies": ["Spinnaker", "PCF", "CI/CD", "DevOps", "Legacy Modernization"]
     },
     {
       "area": "Monitoring & Alerting",
@@ -63,9 +63,9 @@
   ],
 
   "technical_skills": {
-    "backend": ["Java", "Spring Boot", "Python", "RESTful APIs", "Microservices", "Enterprise Architecture"],
+    "backend": ["Java", "Spring Boot", "Python", "RESTful APIs", "Microservices", "Enterprise Architecture", "Spinnaker", "Cloud Functions"],
     "frontend": ["React", "JavaScript", "TypeScript", "HTML5", "CSS3", "Responsive Design", "UI Component Libraries"],
-    "devops": ["Deployment Pipelines", "Git", "GitHub", "Build Automation", "Release Management", "Legacy System Migration"],
+    "devops": ["Spinnaker", "PCF (Pivotal Cloud Foundry)", "Google Cloud Run", "Deployment Pipelines", "Git", "GitHub", "Build Automation", "Release Management", "Legacy App Modernization"],
     "observability": ["Grafana Dashboards", "Application Monitoring", "Alerting Systems", "Prometheus"],
     "other": ["Agile", "Scrum", "Incident Management", "Three.js", "ReportLab"]
   },
@@ -93,15 +93,17 @@
       "Strong enterprise Java and React experience in a Fortune 500 production environment",
       "Comfortable across the full stack — frontend, backend, DevOps, and observability",
       "Self-taught drive — went from bootcamp to shipping production features",
-      "Good at automating manual processes (PDF generation, deployment workflows)",
+      "Hands-on legacy modernization — migrating apps off PCF onto modern Spinnaker-based deployment pipelines",
+      "Good at automating manual processes (Cloud Run Functions for PDF generation, Spinnaker deployment pipelines)",
       "Solid debugging skills in production environments",
       "Experience with monitoring and observability (Grafana, Prometheus)",
+      "Real-world cloud platform experience — Spinnaker, Google Cloud Run; migrated off legacy PCF",
       "Creative problem solver — built 3D visualizations and interactive demos as portfolio pieces"
     ],
     "areas_for_growth": [
       "Still growing in system design for large-scale distributed architectures",
-      "Cloud infrastructure (AWS/GCP/Azure) — have exposure but not deep hands-on yet",
-      "Kubernetes and container orchestration — aware of concepts but haven't worked with it in production",
+      "AWS/Azure — experienced with GCP (Cloud Run, Cloud Functions) but less hands-on with other providers",
+      "Kubernetes — familiar with concepts and have worked adjacent to it via Spinnaker, but not deep K8s configuration",
       "Database design at scale — have worked with databases but not as a primary focus",
       "AI/ML — integrating APIs and prompt engineering, but not building models from scratch"
     ]
