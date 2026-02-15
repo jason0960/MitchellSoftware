@@ -23,13 +23,16 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
-        run: pip install -r server/requirements.txt
+        run: pip install -r server/requirements.txt && pip install pytest
 
       - name: Validate server imports
         run: python -c "from server.app import app; print('✅ Server OK')"
 
       - name: Validate AI module
         run: python -c "from ai.prompt import load_system_prompt; print('✅ AI module OK')"
+
+      - name: Run tests
+        run: python -m pytest tests/ -v
 
   deploy:
     name: Deploy to Render

@@ -38,9 +38,10 @@ MitchellSoftware/
 
 - **Portfolio** — Dark terminal-themed site with creative/professional mode toggle, typing animations, whiteboard overlay, and Prometheus analytics dashboard.
 - **Lumber Yard Restock Planner** — 3D demo built with Three.js r128. Browse/flag bunks, generate PDF delivery orders with flatbed loading diagrams.
-- **AI Recruiter Chatbot** — Floating chat bubble powered by OpenAI. Recruiters enter their name, optionally paste a job posting, and ask questions about Jason's experience. All conversations are logged to SQLite.
+- **AI Recruiter Chatbot** — Floating chat bubble powered by OpenAI. Recruiters enter their name, optionally paste a job posting, and ask questions about Jason's experience. Includes safety guardrails, anti-jailbreak protections, and rate limiting (10 msg/min per IP).
 - **Admin Dashboard** — Token-protected endpoints for viewing chat logs and conversation stats.
-- **Real-Time Analytics** — Prometheus counters/gauges for page views, PDF generations, contact submissions, uptime, memory, and active sessions.
+- **Real-Time Analytics** — Prometheus counters/gauges for page views, PDF generations, contact submissions, uptime, memory, and active sessions. Stats auto-refresh every 30 seconds.
+- **CI/CD Pipeline** — GitHub Actions workflow runs 25 tests, validates imports, then triggers Render deploy via webhook.
 
 ## Quick Start
 
@@ -56,7 +57,7 @@ export ADMIN_TOKEN="your-secret-token"
 python -m server.app
 ```
 
-Open `http://localhost:5000/` for the lumber yard demo, or `http://localhost:5000/portfolio` for the portfolio page.
+Open `http://localhost:5000/` for the portfolio, or `http://localhost:5000/demo` for the lumber yard demo.
 
 ## Environment Variables
 
@@ -67,13 +68,23 @@ Open `http://localhost:5000/` for the lumber yard demo, or `http://localhost:500
 | `FLASK_ENV` | No | Set to `production` on Render |
 | `OPENAI_MODEL` | No | LLM model name (default: `gpt-4o-mini`) |
 | `PORT` | No | Server port (default: `5000`) |
+| `CHAT_DB_DIR` | No | Persistent storage path for chat logs (default: project root) |
+
+## Testing
+
+```bash
+pip install pytest
+python -m pytest tests/ -v
+```
+
+25 tests covering health/static routes, metrics, event tracking, chat validation, admin auth, rate limiting, AI prompt loading, and profile schema validation.
 
 ## API Endpoints
 
 | Endpoint | Method | Description |
 |---|---|---|
-| `/` | GET | Lumber Yard Restock Planner |
-| `/portfolio` | GET | Portfolio page |
+| `/` | GET | Portfolio page |
+| `/demo` | GET | Lumber Yard Restock Planner |
 | `/api/chat` | POST | AI chatbot messages |
 | `/api/track` | POST | Analytics event tracking |
 | `/api/stats` | GET | Live analytics stats |
