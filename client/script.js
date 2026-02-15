@@ -520,6 +520,7 @@
             .catch(() => {});
     }
     loadStats();
+    setInterval(loadStats, 30000);  // refresh stats every 30s
 
     // "Enjoyed this?" vote button
     const enjoyedBtn = document.getElementById('enjoyedBtn');
