@@ -103,7 +103,9 @@ _visitor_log = {}  # { ip: last_seen_timestamp }
 SESSION_WINDOW = 900  # 15 minutes
 
 # ─── SQLite Chat Log Database ──────────────────────────────────
-CHAT_DB_PATH = os.path.join(ROOT_DIR, 'chat_logs.db')
+# Use persistent disk on Render (/data), fallback to project root locally
+_db_dir = os.environ.get('CHAT_DB_DIR', ROOT_DIR)
+CHAT_DB_PATH = os.path.join(_db_dir, 'chat_logs.db')
 
 
 def _init_chat_db():
