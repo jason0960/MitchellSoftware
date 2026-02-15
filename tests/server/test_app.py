@@ -13,15 +13,21 @@ import pytest
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.insert(0, ROOT_DIR)
 
+import server.app as server_module
 from server.app import app, get_fill_color, _track_visitor, _check_chat_rate, _chat_rate, _visitor_log
 
 
 @pytest.fixture
-def client():
-    """Create a test client with a temporary chat database."""
+def client(tmp_path):
+    """Create a test client with an isolated temporary chat database."""
+    test_db = str(tmp_path / 'test_chat_logs.db')
+    original_db = server_module.CHAT_DB_PATH
+    server_module.CHAT_DB_PATH = test_db
+    server_module._init_chat_db()
     app.config['TESTING'] = True
     with app.test_client() as c:
         yield c
+    server_module.CHAT_DB_PATH = original_db
 
 
 @pytest.fixture(autouse=True)
