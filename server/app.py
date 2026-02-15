@@ -138,11 +138,53 @@ def _init_chat_db():
             FOREIGN KEY (conversation_id) REFERENCES conversations(id)
         )
     ''')
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS counters (
+            name TEXT PRIMARY KEY,
+            value INTEGER NOT NULL DEFAULT 0
+        )
+    ''')
+    # Seed counter rows if they don't exist
+    for name in ('portfolio_views', 'demo_views', 'pdf_generations',
+                  'contact_submissions', 'resume_enjoyed', 'chat_messages'):
+        c.execute('INSERT OR IGNORE INTO counters (name, value) VALUES (?, 0)', (name,))
+    conn.commit()
+    conn.close()
+
+
+def _get_counter(name):
+    """Read a persistent counter value from SQLite."""
+    conn = sqlite3.connect(CHAT_DB_PATH)
+    c = conn.cursor()
+    c.execute('SELECT value FROM counters WHERE name = ?', (name,))
+    row = c.fetchone()
+    conn.close()
+    return row[0] if row else 0
+
+
+def _inc_counter(name):
+    """Increment a persistent counter in SQLite and the Prometheus counter."""
+    conn = sqlite3.connect(CHAT_DB_PATH)
+    c = conn.cursor()
+    c.execute('UPDATE counters SET value = value + 1 WHERE name = ?', (name,))
     conn.commit()
     conn.close()
 
 
 _init_chat_db()
+
+# Restore Prometheus counters from persisted values on startup
+for _cname, _pcounter in [
+    ('portfolio_views', PORTFOLIO_VIEWS),
+    ('demo_views', DEMO_VIEWS),
+    ('pdf_generations', PDF_GENERATIONS),
+    ('contact_submissions', CONTACT_SUBMISSIONS),
+    ('resume_enjoyed', RESUME_ENJOYED),
+    ('chat_messages', CHAT_MESSAGES),
+]:
+    _saved = _get_counter(_cname)
+    if _saved > 0:
+        _pcounter.inc(_saved)
 
 
 # ─── AI Chatbot System Prompt ──────────────────────────────────
@@ -176,6 +218,14 @@ def _update_system_metrics():
     CPU_PERCENT.set(process.cpu_percent(interval=None))
 
 
+def _get_real_ip():
+    """Get the real client IP, respecting X-Forwarded-For behind proxies (Render)."""
+    forwarded = request.headers.get('X-Forwarded-For', '')
+    if forwarded:
+        return forwarded.split(',')[0].strip()
+    return request.remote_addr or 'unknown'
+
+
 def _track_visitor(ip):
     """Track unique visitors in a sliding window."""
     now = time.time()
@@ -203,7 +253,7 @@ def _check_chat_rate(ip):
 @app.before_request
 def before_request():
     request._start_time = time.time()
-    _track_visitor(request.remote_addr or 'unknown')
+    _track_visitor(_get_real_ip())
 
 
 @app.after_request
@@ -245,16 +295,18 @@ def track_event():
     event = data.get('event', '')
 
     counter_map = {
-        'portfolio_view': PORTFOLIO_VIEWS,
-        'demo_view': DEMO_VIEWS,
-        'pdf_generated': PDF_GENERATIONS,
-        'contact_submit': CONTACT_SUBMISSIONS,
-        'resume_enjoyed': RESUME_ENJOYED,
+        'portfolio_view': (PORTFOLIO_VIEWS, 'portfolio_views'),
+        'demo_view': (DEMO_VIEWS, 'demo_views'),
+        'pdf_generated': (PDF_GENERATIONS, 'pdf_generations'),
+        'contact_submit': (CONTACT_SUBMISSIONS, 'contact_submissions'),
+        'resume_enjoyed': (RESUME_ENJOYED, 'resume_enjoyed'),
     }
 
-    counter = counter_map.get(event)
-    if counter:
-        counter.inc()
+    entry = counter_map.get(event)
+    if entry:
+        prom_counter, db_name = entry
+        prom_counter.inc()
+        _inc_counter(db_name)
         return jsonify({'ok': True, 'event': event})
     return jsonify({'ok': False, 'error': 'unknown event'}), 400
 
@@ -526,7 +578,7 @@ def chat():
     if not message:
         return jsonify({'error': 'Please provide a message.'}), 400
 
-    ip = request.remote_addr or 'unknown'
+    ip = _get_real_ip()
 
     # Rate limiting
     if not _check_chat_rate(ip):
@@ -556,6 +608,7 @@ def chat():
     conn.commit()
 
     CHAT_MESSAGES.inc()
+    _inc_counter('chat_messages')
 
     c.execute(
         'SELECT role, content FROM messages WHERE conversation_id = ? ORDER BY id',
