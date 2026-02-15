@@ -25,7 +25,6 @@
 
         _subscribers: [],
 
-        // Props — derived values computed from state
         get props() {
             const s = this._state;
             return Object.freeze({
@@ -42,12 +41,10 @@
             });
         },
 
-        // Get raw state value
         get(key) {
             return this._state[key];
         },
 
-        // Update state and notify subscribers
         setState(updates) {
             const prev = { ...this._state };
             let changed = false;
@@ -66,7 +63,6 @@
             }
         },
 
-        // Subscribe to state changes
         subscribe(fn) {
             this._subscribers.push(fn);
             return () => {
@@ -74,33 +70,27 @@
             };
         },
 
-        // Toggle a boolean state value
         toggle(key) {
             this.setState({ [key]: !this._state[key] });
         }
     };
 
     // ============================================
-    // Renderers — subscribe to state, update DOM
+    // Renderers
     // ============================================
 
-    // --- Mode Renderer ---
     function renderMode(props, changed) {
         if (!changed.includes('mode')) return;
 
-        // Update body class
         document.body.classList.toggle('professional', props.isProfessional);
 
-        // Turn off whiteboard when leaving creative
         if (props.isProfessional && AppState.get('whiteboard')) {
             AppState.setState({ whiteboard: false });
         }
 
-        // Update toggle label
         const label = $('#modeLabel');
         if (label) label.textContent = props.modeLabel;
 
-        // Swap hero button content
         const heroBtn = $('#heroBtn');
         if (heroBtn) {
             if (props.isProfessional) {
@@ -110,11 +100,9 @@
             }
         }
 
-        // Persist preference
         localStorage.setItem('jm-portfolio-mode', props.mode);
     }
 
-    // --- Navbar Renderer ---
     function renderNavbar(props, changed) {
         if (changed.includes('scrolled')) {
             const navbar = $('nav.navbar');
@@ -142,7 +130,6 @@
         }
     }
 
-    // --- Whiteboard Renderer ---
     function renderWhiteboard(props, changed) {
         if (!changed.includes('whiteboard') && !changed.includes('mode')) return;
 
@@ -152,7 +139,7 @@
         if (btn) btn.classList.toggle('active', props.whiteboard);
 
         if (props.whiteboard) {
-            const overlay = $('#wbOverlay');
+            const overlay = document.getElementById('wbOverlay');
             if (overlay) overlay.style.height = document.documentElement.scrollHeight + 'px';
             requestAnimationFrame(positionAnnotations);
         }
@@ -160,7 +147,7 @@
 
     function positionAnnotations() {
         const annotations = $$('.wb-annotation[data-target]');
-        const sy = window.scrollY;
+        const scrollY = window.scrollY;
         const vw = window.innerWidth;
         const isMobile = vw <= 768;
 
@@ -170,107 +157,105 @@
             if (!target) return;
 
             const r = target.getBoundingClientRect();
-            const absTop = r.top + sy;
+            const absTop = r.top + scrollY;
             const absLeft = r.left;
             const centerX = absLeft + r.width / 2;
-            const aw = ann.offsetWidth || 200;
-            const ah = ann.offsetHeight || 60;
 
-            // Reset special positioning
-            ann.style.position = '';
-            ann.style.right = '';
-            ann.style.bottom = '';
+            ann.style.position = 'absolute';
 
             if (isMobile) {
-                // On mobile, place all annotations below their target, clamped to viewport
-                if (targetId === 'cursorGlow') return; // hidden via CSS on mobile
-                ann.style.left = Math.max(4, Math.min(centerX - aw * 0.375, vw - aw * 0.75 - 4)) + 'px';
+                if (targetId === 'cursorGlow') return;
+                ann.style.left = Math.max(4, Math.min(centerX - (ann.offsetWidth || 200) * 0.375, vw - (ann.offsetWidth || 200) * 0.75 - 4)) + 'px';
                 ann.style.top = (absTop + r.height + 6) + 'px';
                 return;
             }
 
             switch (targetId) {
-                /* ---- BELOW-target annotations (arrow ↑ label) ---- */
+                // --- BELOW: arrow tip at top touches element bottom ---
                 case 'modeToggle':
-                    ann.style.left = Math.max(4, Math.min(centerX - aw / 2, vw - aw - 4)) + 'px';
-                    ann.style.top = (absTop + r.height + 8) + 'px';
-                    break;
-                case 'navBrand':
-                    ann.style.left = Math.max(4, absLeft) + 'px';
-                    ann.style.top = (absTop + r.height + 8) + 'px';
-                    break;
-                case 'whiteboardBtn':
-                    ann.style.left = Math.max(4, centerX - aw / 2) + 'px';
-                    ann.style.top = (absTop + r.height + 8) + 'px';
-                    break;
-                case 'socialLinks':
-                    ann.style.left = Math.max(4, absLeft) + 'px';
-                    ann.style.top = (absTop + r.height + 8) + 'px';
+                    ann.style.left = Math.max(8, centerX - ann.offsetWidth / 2) + 'px';
+                    ann.style.top = (absTop + r.height + 4) + 'px';
                     break;
 
-                /* ---- RIGHT-of-target annotations (arrow ← label) ---- */
+                case 'navBrand':
+                    ann.style.left = Math.max(8, centerX - ann.offsetWidth / 2) + 'px';
+                    ann.style.top = (absTop + r.height + 4) + 'px';
+                    break;
+
+                case 'whiteboardBtn':
+                    ann.style.left = Math.max(8, centerX - ann.offsetWidth / 2) + 'px';
+                    ann.style.top = (absTop + r.height + 4) + 'px';
+                    break;
+
+                case 'socialLinks':
+                    ann.style.left = Math.max(4, absLeft) + 'px';
+                    ann.style.top = (absTop + r.height + 4) + 'px';
+                    break;
+
+                // --- RIGHT: arrow tip at left touches element right edge ---
                 case 'editorTabs':
-                    ann.style.left = Math.min(absLeft + r.width + 12, vw - aw - 4) + 'px';
-                    ann.style.top = (absTop + r.height / 2 - ah / 2) + 'px';
+                    ann.style.left = Math.min(vw - 320, absLeft + r.width + 4) + 'px';
+                    ann.style.top = (absTop + r.height / 2 - 10) + 'px';
                     break;
+
                 case 'scrollHint':
-                    ann.style.left = Math.min(absLeft + r.width + 12, vw - aw - 4) + 'px';
-                    ann.style.top = (absTop + r.height / 2 - ah / 2) + 'px';
+                    ann.style.left = (absLeft + r.width + 10) + 'px';
+                    ann.style.top = (absTop - 5) + 'px';
                     break;
+
                 case 'timeline':
-                    ann.style.left = Math.min(absLeft + r.width + 12, vw - aw - 4) + 'px';
+                    ann.style.left = Math.min(vw - 320, absLeft + r.width + 10) + 'px';
                     ann.style.top = (absTop + 40) + 'px';
                     break;
 
-                /* ---- LEFT-of-target annotations (label arrow →) ---- */
+                // --- LEFT: label then arrow, arrow tip at right touches element left ---
                 case 'typedText':
-                    ann.style.left = Math.max(4, absLeft - aw - 12) + 'px';
-                    ann.style.top = (absTop - 4) + 'px';
-                    break;
-                case 'heroTagline':
-                    ann.style.left = Math.max(4, absLeft - aw - 12) + 'px';
-                    ann.style.top = (absTop - 4) + 'px';
+                    ann.style.left = Math.max(8, absLeft - ann.offsetWidth - 4) + 'px';
+                    ann.style.top = (absTop - 5) + 'px';
                     break;
 
-                /* ---- ABOVE-target annotations (label arrow ↓) ---- */
+                case 'heroTagline':
+                    ann.style.left = Math.max(8, absLeft - ann.offsetWidth - 4) + 'px';
+                    ann.style.top = (absTop - 5) + 'px';
+                    break;
+
+                // --- ABOVE: label then arrow pointing down ---
                 case 'workGrid':
-                    ann.style.left = (absLeft + 20) + 'px';
-                    ann.style.top = (absTop - ah - 8) + 'px';
+                    ann.style.left = Math.max(8, absLeft + 20) + 'px';
+                    ann.style.top = (absTop - ann.offsetHeight - 4) + 'px';
                     break;
+
                 case 'skillsGrid':
-                    ann.style.left = (absLeft + 20) + 'px';
-                    ann.style.top = (absTop - ah - 8) + 'px';
+                    ann.style.left = Math.max(8, absLeft + 20) + 'px';
+                    ann.style.top = (absTop - ann.offsetHeight - 4) + 'px';
                     break;
+
                 case 'contactForm':
                     ann.style.left = (absLeft + r.width * 0.55) + 'px';
-                    ann.style.top = (absTop - ah - 8) + 'px';
+                    ann.style.top = (absTop - ann.offsetHeight - 4) + 'px';
                     break;
 
-                /* ---- FIXED annotation ---- */
+                // --- FIXED corner ---
                 case 'cursorGlow':
                     ann.style.position = 'fixed';
                     ann.style.right = '2rem';
-                    ann.style.bottom = '5rem';
+                    ann.style.bottom = '3rem';
                     ann.style.left = 'auto';
                     ann.style.top = 'auto';
-                    break;
+                    return;
             }
         });
     }
 
-    // Reposition on scroll (needed for fixed-navbar elements) & resize
-    window.addEventListener('scroll', () => {
-        if (AppState.props.whiteboard) requestAnimationFrame(positionAnnotations);
-    });
     window.addEventListener('resize', () => {
         if (AppState.props.whiteboard) requestAnimationFrame(positionAnnotations);
     });
 
-    // Subscribe renderers
     AppState.subscribe(renderMode);
     AppState.subscribe(renderNavbar);
     AppState.subscribe(renderWhiteboard);
 
+    // Typing effect
     const typedEl = $('#typedText');
     let typingTimeout = null;
 
@@ -280,7 +265,7 @@
             'Java & React Developer',
             'Full Stack Engineer',
             'Python Automation Builder',
-            'DevOps & CI/CD Contributor'
+            'DevOps & CI/CD Designer'
         ];
         let stringIndex = 0;
         let charIndex = 0;
@@ -291,7 +276,6 @@
         const pauseStart = 500;
 
         function type() {
-            // Only run in creative mode
             if (!AppState.props.typingActive) {
                 typingTimeout = setTimeout(type, 500);
                 return;
@@ -321,6 +305,7 @@
         setTimeout(type, 1000);
     }
 
+    // Cursor glow (creative mode only)
     const glow = $('#cursorGlow');
     if (glow) {
         document.addEventListener('mousemove', (e) => {
@@ -331,7 +316,7 @@
         });
     }
 
-    // --- Scroll Handler ---
+    // Scroll tracking
     let scrollTicking = false;
     window.addEventListener('scroll', () => {
         if (!scrollTicking) {
@@ -357,7 +342,7 @@
         }
     });
 
-    // --- Mode Toggle ---
+    // Mode toggle
     const toggleBtn = $('#modeToggle');
     if (toggleBtn) {
         toggleBtn.addEventListener('click', () => {
@@ -366,7 +351,7 @@
         });
     }
 
-    // --- Whiteboard Toggle ---
+    // Whiteboard toggle
     const wbBtn = $('#whiteboardBtn');
     if (wbBtn) {
         wbBtn.addEventListener('click', () => {
@@ -374,7 +359,7 @@
         });
     }
 
-    // --- Mobile Menu ---
+    // Mobile menu
     const hamburger = $('#hamburger');
     const navMenu = $('#navMenu');
 
@@ -390,7 +375,7 @@
         });
     }
 
-    // --- Smooth Scroll ---
+    // Smooth scroll
     $$('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
             e.preventDefault();
@@ -404,6 +389,7 @@
         });
     });
 
+    // Reveal animations
     const revealObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -418,11 +404,11 @@
         revealObserver.observe(el);
     });
 
+    // EmailJS
     const EMAILJS_PUBLIC_KEY = 'ImyXAHd9l808uQoki';
     const EMAILJS_SERVICE_ID = 'service_k5gog04';
     const EMAILJS_TEMPLATE_ID = 'template_a2sf6bc';
 
-    // Initialize EmailJS
     if (window.emailjs) {
         emailjs.init(EMAILJS_PUBLIC_KEY);
     }
@@ -434,7 +420,6 @@
             const btn = form.querySelector('.btn-primary');
             const origHTML = btn.innerHTML;
 
-            // Disable button while sending
             btn.disabled = true;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
 
@@ -493,7 +478,7 @@
     // ============================================
     // Prometheus Tracking — Portfolio Analytics
     // ============================================
-    const API_BASE = 'https://mitchellsoftwareportfolio.onrender.com';
+    const API_BASE = '';  // same-origin — served by Flask
 
     function trackEvent(event) {
         fetch(`${API_BASE}/api/track`, {
@@ -550,9 +535,9 @@
             enjoyedBtn.classList.add('voted');
             enjoyedBtn.disabled = true;
             localStorage.setItem('jm-enjoyed-voted', '1');
-            // Refresh stats after a short delay
             setTimeout(loadStats, 500);
         });
     }
 
 })();
+
