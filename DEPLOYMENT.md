@@ -1,113 +1,71 @@
-# Deployment Guide
+# Deployment Guide — Render.com
 
-This portfolio website is ready to be deployed on any static hosting platform. Here are the most popular options:
+This project is deployed as a single **Render Web Service** that serves both the Flask backend and all static frontend files.
 
-## Option 1: GitHub Pages (Recommended - Free)
+## Render Setup
 
-1. Go to your repository on GitHub: https://github.com/jason0960/MitchellSoftware
-2. Click on **Settings** → **Pages**
-3. Under "Build and deployment":
-   - Source: Deploy from a branch
-   - Branch: Select `copilot/create-portfolio-website` (or merge to `main` and use `main`)
-   - Folder: `/ (root)`
-4. Click **Save**
-5. Wait a few minutes, then visit: `https://jason0960.github.io/MitchellSoftware/`
+1. Go to [Render Dashboard](https://dashboard.render.com) and connect the GitHub repo.
+2. Create a **Web Service** with these settings:
 
-## Option 2: Netlify (Free)
+| Setting | Value |
+|---|---|
+| Name | `lumber-yard-restock-planner` (or whatever you prefer) |
+| Runtime | Python |
+| Build Command | `pip install -r server/requirements.txt` |
+| Start Command | `python -m server.app` |
+| Plan | Free |
 
-1. Sign up at https://netlify.com
-2. Click "Add new site" → "Import an existing project"
-3. Connect your GitHub account and select this repository
-4. Configure settings:
-   - Branch: `copilot/create-portfolio-website`
-   - Build command: (leave empty)
-   - Publish directory: `/`
-5. Click "Deploy site"
-6. Your site will be live at a netlify.app subdomain (can customize)
+3. Add **Environment Variables** on the service:
 
-## Option 3: Vercel (Free)
+| Key | Value |
+|---|---|
+| `OPENAI_API_KEY` | Your OpenAI API key |
+| `ADMIN_TOKEN` | Secret token for admin routes |
+| `FLASK_ENV` | `production` |
+| `PYTHON_VERSION` | `3.11.0` |
+| `OPENAI_MODEL` | *(optional)* default: `gpt-4o-mini` |
 
-1. Sign up at https://vercel.com
-2. Click "Add New..." → "Project"
-3. Import your GitHub repository
-4. Configure settings:
-   - Framework Preset: Other
-   - Root Directory: `./`
-   - Build Command: (leave empty)
-   - Output Directory: (leave empty)
-5. Click "Deploy"
-6. Your site will be live at a vercel.app subdomain (can customize)
+4. Deploy. Render will auto-deploy on every push to the connected branch.
 
-## Option 4: Custom Domain
+## URLs
 
-If you have your own domain:
+| URL | Page |
+|---|---|
+| `https://<service>.onrender.com/` | Lumber Yard Restock Planner (demo) |
+| `https://<service>.onrender.com/portfolio` | Portfolio page |
+| `https://<service>.onrender.com/health` | Health check |
+| `https://<service>.onrender.com/metrics` | Prometheus metrics |
+| `https://<service>.onrender.com/admin/chat-logs?token=…` | Chat logs |
+| `https://<service>.onrender.com/admin/chat-stats?token=…` | Chat stats |
 
-1. Deploy using any of the above methods
-2. Configure custom domain in the platform's settings
-3. Update your domain's DNS records (platform will provide instructions)
+## `render.yaml` (Infrastructure as Code)
+
+The repo includes a `render.yaml` that Render uses for automatic service configuration.
+If you set up via the dashboard, the `render.yaml` is optional but keeps config in source control.
+
+## Environment Variables Not Active?
+
+If your env vars show "not active" on Render, it means the service hasn't been redeployed since they were added. Go to your service → **Manual Deploy** → **Deploy latest commit** and they'll take effect.
 
 ## Testing Locally
 
-To test the website locally before deployment:
-
 ```bash
-# Using Python (Python 3)
-python3 -m http.server 8000
+# Install deps
+pip install -r server/requirements.txt
 
-# Using Node.js
-npx http-server
+# Set env vars
+export OPENAI_API_KEY="sk-..."
+export ADMIN_TOKEN="your-secret"
 
-# Using PHP
-php -S localhost:8000
+# Run
+python -m server.app
 ```
 
-Then open http://localhost:8000 in your browser.
+Open `http://localhost:5000/` (demo) or `http://localhost:5000/portfolio` (portfolio).
 
-## Customization
+## Custom Domain (Optional)
 
-Before deploying, you may want to customize:
-
-1. **Contact Information** in `index.html`:
-   - Email address
-   - LinkedIn URL
-   - GitHub username
-
-2. **Projects** in `index.html`:
-   - Replace placeholder projects with your actual work
-   - Update project links and descriptions
-
-3. **About Section**:
-   - Customize statistics (years of experience, projects completed)
-   - Update the bio text
-
-4. **Skills**:
-   - Add or remove skills based on your expertise
-   - Reorder categories if needed
-
-5. **Colors** in `styles.css`:
-   - Modify CSS custom properties in `:root` section
-   - Change gradient colors for hero section
-
-## Performance Optimization
-
-The website is already optimized, but for even better performance:
-
-1. Minify CSS and JavaScript (optional for such a small site)
-2. Add CDN for Font Awesome (already implemented)
-3. Enable caching headers on your hosting platform
-4. Consider adding a service worker for offline support
-
-## SEO Tips
-
-1. Update meta description in `index.html`
-2. Add Open Graph tags for social media sharing
-3. Create a sitemap.xml
-4. Submit your site to Google Search Console
-5. Add Google Analytics if you want to track visitors
-
-## Support
-
-If you encounter any issues, feel free to:
-- Open an issue on GitHub
-- Check the platform's documentation
-- Review browser console for any JavaScript errors
+1. In Render dashboard → your service → **Settings** → **Custom Domains**
+2. Add your domain (e.g. `mitchellsoftware.dev`)
+3. Update your DNS records as Render instructs
+4. Render handles SSL automatically

@@ -1,18 +1,17 @@
 """
-Lumber Yard Restock Planner — Flask PDF Server
-Generates incoming delivery restock order PDFs with ReportLab.
-Exposes Prometheus /metrics endpoint for observability.
+MitchellSoftware — Flask Backend
+Portfolio server handling PDF generation, AI chatbot, metrics, and static file serving.
 """
 import io
 import base64
 import json
 import time
 import os
+import sys
 import sqlite3
 import uuid
 import psutil
 from datetime import datetime
-from openai import OpenAI
 
 from flask import Flask, request, send_file, jsonify, Response
 from flask_cors import CORS
@@ -27,7 +26,17 @@ from reportlab.platypus import (
 from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
 from prometheus_client import Counter, Gauge, Histogram, generate_latest, CONTENT_TYPE_LATEST
 
-app = Flask(__name__, static_folder='.', static_url_path='')
+# ─── Path Setup ────────────────────────────────────────────────
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+CLIENT_DIR = os.path.join(ROOT_DIR, 'client')
+AI_DIR = os.path.join(ROOT_DIR, 'ai')
+
+# Add project root to path so we can import from ai/
+sys.path.insert(0, ROOT_DIR)
+
+from ai.prompt import load_system_prompt
+
+app = Flask(__name__, static_folder=CLIENT_DIR, static_url_path='')
 CORS(app, resources={r"/api/*": {"origins": "*"}, r"/metrics": {"origins": "*"}, r"/admin/*": {"origins": "*"}})
 
 SERVER_START_TIME = time.time()
@@ -90,12 +99,11 @@ REQUEST_LATENCY = Histogram(
 )
 
 # ─── Session Tracking ──────────────────────────────────────────
-# In-memory session tracking (visitor IPs seen in last 15 min)
 _visitor_log = {}  # { ip: last_seen_timestamp }
 SESSION_WINDOW = 900  # 15 minutes
 
 # ─── SQLite Chat Log Database ──────────────────────────────────
-CHAT_DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'chat_logs.db')
+CHAT_DB_PATH = os.path.join(ROOT_DIR, 'chat_logs.db')
 
 
 def _init_chat_db():
@@ -131,33 +139,8 @@ _init_chat_db()
 
 
 # ─── AI Chatbot System Prompt ──────────────────────────────────
-def _load_system_prompt():
-    """Load Jason's profile data and build the system prompt."""
-    profile_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'jason_profile.json')
-    with open(profile_path, 'r') as f:
-        profile = json.load(f)
-
-    return f"""You are Jason Mitchell's AI representative on his portfolio website. Your job is to answer questions from recruiters and hiring managers about Jason's experience, skills, and background.
-
-IMPORTANT RULES:
-- Be honest and transparent. Never exaggerate or fabricate experience.
-- If asked about something Jason doesn't have experience with, say so clearly but frame it constructively (e.g., "Jason hasn't worked with Kubernetes in production yet, but he's familiar with containerization concepts and is eager to learn.").
-- Be conversational, professional, and warm — represent Jason well.
-- Keep responses concise but thorough. Aim for 2-4 sentences unless more detail is requested.
-- If a recruiter pastes a job posting, give an honest assessment of fit — highlight matching skills AND gaps.
-- You may refer to Jason in the third person ("Jason has...") or first person ("I have...") — match whatever feels natural in context.
-- Never make up specific dates, numbers, or claims not in the profile data.
-- If asked something personal or inappropriate, politely decline.
-
-JASON'S PROFILE DATA:
-{json.dumps(profile, indent=2)}
-
-Remember: honesty is Jason's differentiator. Recruiters appreciate candor over sales pitches."""
-
-
-# Cache the system prompt at startup
 try:
-    SYSTEM_PROMPT = _load_system_prompt()
+    SYSTEM_PROMPT = load_system_prompt()
 except Exception as e:
     print(f'Warning: Could not load profile for AI chatbot: {e}')
     SYSTEM_PROMPT = 'You are Jason Mitchell\'s AI assistant. Answer questions about his software engineering experience honestly.'
@@ -170,6 +153,7 @@ def _get_openai_client():
     """Get or create the OpenAI client."""
     global _openai_client
     if _openai_client is None:
+        from openai import OpenAI
         api_key = os.environ.get('OPENAI_API_KEY')
         if not api_key:
             raise ValueError('OPENAI_API_KEY environment variable is not set')
@@ -189,7 +173,6 @@ def _track_visitor(ip):
     """Track unique visitors in a sliding window."""
     now = time.time()
     _visitor_log[ip] = now
-    # Prune old entries
     cutoff = now - SESSION_WINDOW
     to_delete = [k for k, v in _visitor_log.items() if v < cutoff]
     for k in to_delete:
@@ -215,6 +198,20 @@ def after_request(response):
     REQUEST_LATENCY.labels(endpoint=endpoint).observe(latency)
     return response
 
+
+# ─── Routes: Pages ─────────────────────────────────────────────
+
+@app.route('/')
+def index():
+    return app.send_static_file('demo/pallet-builder.html')
+
+
+@app.route('/portfolio')
+def portfolio():
+    return app.send_static_file('index.html')
+
+
+# ─── Routes: Metrics & Tracking ───────────────────────────────
 
 @app.route('/metrics')
 def metrics():
@@ -265,9 +262,7 @@ def get_stats():
     })
 
 
-@app.route('/')
-def index():
-    return app.send_static_file('pallet-builder.html')
+# ─── Routes: PDF Generation ───────────────────────────────────
 
 HD_ORANGE = colors.HexColor('#F96302')
 DARK_BG   = colors.HexColor('#0a0e17')
@@ -411,7 +406,6 @@ def generate_pdf():
             f"${item['totalCost']:,.2f}",
         ])
 
-    # Totals row
     table_data.append([
         '', '', '', '', '', str(total_pieces),
         '', f'{total_weight:,} lbs', f'${total_cost:,.2f}',
@@ -435,14 +429,12 @@ def generate_pdf():
         ('ROWBACKGROUNDS', (0, 1), (-1, -2), [colors.white, colors.HexColor('#fafafa')]),
         ('TOPPADDING', (0, 0), (-1, -1), 4),
         ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
-        # Totals row
         ('BACKGROUND', (0, -1), (-1, -1), colors.HexColor('#fff3e0')),
         ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
         ('TEXTCOLOR', (0, -1), (-1, -1), HD_ORANGE),
         ('LINEABOVE', (0, -1), (-1, -1), 2, HD_ORANGE),
     ]
 
-    # Color-code stock cells
     for i, item in enumerate(items, 1):
         pct = item['current'] / item['capacity'] if item['capacity'] > 0 else 0
         c = get_fill_color(pct)
@@ -498,7 +490,7 @@ def generate_pdf():
     )
 
 
-# ─── AI Chatbot Endpoints ──────────────────────────────────────
+# ─── Routes: AI Chatbot ───────────────────────────────────────
 
 @app.route('/api/chat', methods=['POST'])
 def chat():
@@ -520,7 +512,6 @@ def chat():
     conn = sqlite3.connect(CHAT_DB_PATH)
     c = conn.cursor()
 
-    # Create or retrieve conversation
     if not conversation_id:
         conversation_id = str(uuid.uuid4())
         c.execute(
@@ -528,13 +519,10 @@ def chat():
             (conversation_id, recruiter_name, job_posting, now, now, ip)
         )
     else:
-        # Update existing conversation
         c.execute('UPDATE conversations SET last_message_at = ? WHERE id = ?', (now, conversation_id))
-        # Update job posting if provided and conversation exists
         if job_posting:
             c.execute('UPDATE conversations SET job_posting = ? WHERE id = ?', (job_posting, conversation_id))
 
-    # Save user message
     c.execute(
         'INSERT INTO messages (conversation_id, role, content, timestamp) VALUES (?, ?, ?, ?)',
         (conversation_id, 'user', message, now)
@@ -544,24 +532,20 @@ def chat():
 
     CHAT_MESSAGES.inc()
 
-    # Build conversation history for context
     c.execute(
         'SELECT role, content FROM messages WHERE conversation_id = ? ORDER BY id',
         (conversation_id,)
     )
     history = [{'role': row[0], 'content': row[1]} for row in c.fetchall()]
 
-    # Build messages for LLM
     llm_messages = [{'role': 'system', 'content': SYSTEM_PROMPT}]
 
-    # Inject job posting context if present
     if job_posting:
         llm_messages.append({
             'role': 'system',
             'content': f'The recruiter has shared this job posting for fit assessment:\n\n{job_posting}'
         })
 
-    # Add recruiter name context
     llm_messages.append({
         'role': 'system',
         'content': f'The recruiter\'s name is {recruiter_name}. You may address them by name occasionally.'
@@ -572,7 +556,6 @@ def chat():
         for m in history
     ])
 
-    # Call the LLM
     try:
         client = _get_openai_client()
         response = client.chat.completions.create(
@@ -589,7 +572,6 @@ def chat():
         conn.close()
         return jsonify({'error': f'AI service temporarily unavailable: {str(e)}'}), 503
 
-    # Save assistant reply
     reply_time = datetime.utcnow().isoformat()
     c.execute(
         'INSERT INTO messages (conversation_id, role, content, timestamp) VALUES (?, ?, ?, ?)',
@@ -606,7 +588,7 @@ def chat():
     })
 
 
-# ─── Admin: View Chat Logs (token-protected) ──────────────────
+# ─── Routes: Admin (token-protected) ──────────────────────────
 
 @app.route('/admin/chat-logs')
 def admin_chat_logs():
@@ -674,15 +656,18 @@ def admin_chat_stats():
     })
 
 
+# ─── Routes: Health ────────────────────────────────────────────
+
 @app.route('/health')
 def health():
-    return jsonify({'status': 'ok', 'service': 'Lumber Yard Restock Planner'})
+    return jsonify({'status': 'ok', 'service': 'MitchellSoftware Portfolio'})
 
+
+# ─── Entry Point ───────────────────────────────────────────────
 
 if __name__ == '__main__':
-    import os
     port = int(os.environ.get('PORT', 5000))
     debug = os.environ.get('FLASK_ENV') != 'production'
-    print('\n🪵  Lumber Yard Restock Planner — PDF Server')
+    print('\n🚀  MitchellSoftware — Portfolio Server')
     print(f'   http://localhost:{port}\n')
     app.run(debug=debug, host='0.0.0.0', port=port)

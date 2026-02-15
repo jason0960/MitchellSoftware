@@ -478,7 +478,7 @@
     // ============================================
     // Prometheus Tracking — Portfolio Analytics
     // ============================================
-    const API_BASE = 'https://mitchellsoftwareportfolio.onrender.com';
+    const API_BASE = '';  // same-origin — served by Flask
 
     function trackEvent(event) {
         fetch(`${API_BASE}/api/track`, {

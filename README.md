@@ -1,106 +1,95 @@
-# MitchellSoftware
+# MitchellSoftware — Portfolio + AI Chatbot
 
-My portfolio site and the interactive Lumber Yard Restock Planner demo that goes with it. Built this to show what I can do — full-stack engineering, 3D rendering, PDF automation, and observability — all in one place.
+Full-stack portfolio site for Jason Mitchell featuring an interactive 3D lumber yard demo, AI recruiter chatbot, and real-time analytics.
 
-**Portfolio**: [jason0960.github.io/MitchellSoftware](https://jason0960.github.io/MitchellSoftware/)
-**Demo**: [mitchellsoftwareportfolio.onrender.com](https://mitchellsoftwareportfolio.onrender.com)
+## Project Structure
 
----
+```
+MitchellSoftware/
+├── client/                  # Frontend (served by Flask)
+│   ├── index.html           # Portfolio page
+│   ├── styles.css           # Portfolio styles
+│   ├── script.js            # Portfolio logic + analytics
+│   ├── chat.js              # AI chatbot client
+│   └── demo/                # Interactive demos
+│       ├── pallet-builder.html
+│       ├── pallet-builder.css
+│       └── pallet-builder.js
+│
+├── server/                  # Flask backend
+│   ├── app.py               # Main server — routes, PDF gen, chat API
+│   └── requirements.txt     # Python dependencies
+│
+├── ai/                      # AI chatbot module
+│   ├── __init__.py
+│   ├── prompt.py            # System prompt builder
+│   └── jason_profile.json   # Structured profile data
+│
+├── tests/                   # Test suites
+│   ├── server/              # Server tests
+│   └── ai/                  # AI module tests
+│
+├── render.yaml              # Render.com deployment config
+├── DEPLOYMENT.md            # Deployment guide
+└── README.md                # ← you are here
+```
 
-## What's in here
+## Features
 
-### Portfolio (`index.html`)
+- **Portfolio** — Dark terminal-themed site with creative/professional mode toggle, typing animations, whiteboard overlay, and Prometheus analytics dashboard.
+- **Lumber Yard Restock Planner** — 3D demo built with Three.js r128. Browse/flag bunks, generate PDF delivery orders with flatbed loading diagrams.
+- **AI Recruiter Chatbot** — Floating chat bubble powered by OpenAI. Recruiters enter their name, optionally paste a job posting, and ask questions about Jason's experience. All conversations are logged to SQLite.
+- **Admin Dashboard** — Token-protected endpoints for viewing chat logs and conversation stats.
+- **Real-Time Analytics** — Prometheus counters/gauges for page views, PDF generations, contact submissions, uptime, memory, and active sessions.
 
-The main site. Dark terminal theme with an orange accent, JetBrains Mono font, the whole vibe. Has a creative/professional mode toggle so you can switch between a styled layout and a cleaner one. Everything's state-driven through a custom `AppState` manager — no frameworks, just vanilla JS.
+## Quick Start
 
-Sections cover my career timeline, work contributions, tech stack, and a contact form wired up through EmailJS. There's also a "Did you enjoy this?" vote button that feeds into the analytics dashboard at the bottom of the page.
-
-### Lumber Yard Restock Planner (`pallet-builder.*`)
-
-This is the interactive demo. A 3D lumber yard with 20 product bunks you can browse, click to flag for restocking, and generate a full PDF delivery order from. The PDF includes:
-
-- Line items with pricing and weight
-- A **3D-rendered flatbed truck diagram** showing how the bunks get loaded (bin-packed onto the trailer)
-- A yard health bar chart
-- Order summary with totals
-
-Built the 3D scene with Three.js r128. The truck diagram is rendered offscreen in a separate Three.js scene, exported as a PNG, and embedded directly into the PDF via ReportLab. The bin-packing uses a first-fit decreasing algorithm to figure out optimal loading.
-
-The yard itself has individual board layers in each bunk, sticker separators between layers, banding straps — I went a little overboard on the detail but it looks good.
-
-### Backend (`server.py`)
-
-Flask server that handles:
-- PDF generation via ReportLab
-- Prometheus metrics (`/metrics` endpoint with counters, gauges, histograms)
-- Event tracking (`/api/track`) and stats (`/api/stats`)
-- System health monitoring (uptime, memory, CPU via psutil)
-- Session tracking with a 15-minute sliding window
-
-Deployed on Render.com. The portfolio itself is static on GitHub Pages.
-
----
-
-## Running it locally
-
-**Portfolio only** (no backend needed):
 ```bash
-python -m http.server 8000
-# then go to http://localhost:8000
+# 1. Install dependencies
+pip install -r server/requirements.txt
+
+# 2. Set environment variables
+export OPENAI_API_KEY="sk-..."
+export ADMIN_TOKEN="your-secret-token"
+
+# 3. Run the server
+python -m server.app
 ```
 
-**Full stack with the demo**:
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-python server.py
-# then go to http://localhost:5000
-```
+Open `http://localhost:5000/` for the lumber yard demo, or `http://localhost:5000/portfolio` for the portfolio page.
 
-**Tests**:
-```bash
-source .venv/bin/activate
-pip install pytest
-python -m pytest tests/ -v
-```
+## Environment Variables
 
----
+| Variable | Required | Description |
+|---|---|---|
+| `OPENAI_API_KEY` | Yes | OpenAI API key for the chatbot |
+| `ADMIN_TOKEN` | Yes | Secret token for `/admin/*` routes |
+| `FLASK_ENV` | No | Set to `production` on Render |
+| `OPENAI_MODEL` | No | LLM model name (default: `gpt-4o-mini`) |
+| `PORT` | No | Server port (default: `5000`) |
 
-## Tech
+## API Endpoints
 
-- **Frontend**: HTML/CSS/JS (no frameworks), Three.js for 3D, OrbitControls for camera
-- **Backend**: Python, Flask, ReportLab, flask-cors
-- **Monitoring**: prometheus-client, psutil
-- **Hosting**: GitHub Pages (portfolio), Render.com (demo/API)
-- **Fonts**: JetBrains Mono, Inter, Caveat
-- **Testing**: pytest (306 tests across 6 test files)
+| Endpoint | Method | Description |
+|---|---|---|
+| `/` | GET | Lumber Yard Restock Planner |
+| `/portfolio` | GET | Portfolio page |
+| `/api/chat` | POST | AI chatbot messages |
+| `/api/track` | POST | Analytics event tracking |
+| `/api/stats` | GET | Live analytics stats |
+| `/generate-pdf` | POST | PDF restock order generation |
+| `/metrics` | GET | Prometheus metrics |
+| `/admin/chat-logs?token=…` | GET | View all conversations |
+| `/admin/chat-stats?token=…` | GET | Conversation statistics |
+| `/health` | GET | Health check |
 
-## Project structure
+## Deployment
 
-```
-├── index.html              # Portfolio page
-├── styles.css              # Portfolio styles (dark + light themes)
-├── script.js               # Portfolio JS (AppState, renderers, tracking)
-├── pallet-builder.html     # Restock Planner page
-├── pallet-builder.js       # 3D yard, interactions, PDF generation
-├── pallet-builder.css      # Restock Planner styles
-├── server.py               # Flask backend (PDF, metrics, tracking)
-├── requirements.txt        # Python deps
-├── pytest.ini              # Test config
-├── tests/                  # Test suite (306 tests)
-├── render.yaml             # Render.com deploy config
-├── .github/workflows/      # GitHub Pages CI
-├── DEPLOYMENT.md           # Deploy notes
-└── README.md
-```
+Deployed on **Render.com** as a single web service. See [DEPLOYMENT.md](DEPLOYMENT.md) for details.
 
-## Contact
+## Tech Stack
 
-- **Email**: [jasonmitchell096@gmail.com](mailto:jasonmitchell096@gmail.com)
-- **LinkedIn**: [linkedin.com/in/jason-mitchell-b39a4418b](https://www.linkedin.com/in/jason-mitchell-b39a4418b)
-- **GitHub**: [github.com/jason0960](https://github.com/jason0960)
-
----
-
-© 2026 Jason Mitchell
+**Frontend:** Vanilla JS, Three.js r128, CSS3, EmailJS  
+**Backend:** Python, Flask, ReportLab, Prometheus  
+**AI:** OpenAI API (gpt-4o-mini), SQLite  
+**Deployment:** Render.com

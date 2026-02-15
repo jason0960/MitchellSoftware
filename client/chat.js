@@ -4,7 +4,7 @@
 (function () {
     'use strict';
 
-    const API_BASE = 'https://mitchellsoftwareportfolio.onrender.com';
+    const API_BASE = '';  // same-origin — served by Flask
 
     // DOM refs
     const toggle = document.getElementById('chatToggle');
