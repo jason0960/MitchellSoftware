@@ -534,5 +534,49 @@
     </div>
 
     <script src="script.js?v=3"></script>
+
+    <!-- AI Chat Bubble Widget -->
+    <button class="chat-toggle" id="chatToggle" aria-label="Chat with Jason's AI">
+        <i class="fas fa-robot chat-icon-open"></i>
+        <i class="fas fa-times chat-icon-close"></i>
+    </button>
+
+    <div class="chat-window" id="chatWindow">
+        <div class="chat-header">
+            <div class="chat-header-avatar"><i class="fas fa-robot"></i></div>
+            <div class="chat-header-info">
+                <div class="chat-header-name">Ask Jason's AI</div>
+                <div class="chat-header-status">Powered by OpenAI &bull; Honest answers</div>
+            </div>
+        </div>
+
+        <!-- Intro screen: collect name & optional job posting -->
+        <div class="chat-intro" id="chatIntro">
+            <h3><i class="fas fa-hand-wave" style="color: var(--accent);"></i> Hey there!</h3>
+            <p>I'm Jason's AI representative. Ask me anything about his experience, skills, or paste a job posting and I'll give you an honest fit assessment.</p>
+            <div class="chat-intro-field">
+                <label for="chatRecruiterName">Your Name *</label>
+                <input type="text" id="chatRecruiterName" placeholder="e.g. Sarah from Acme Corp" />
+            </div>
+            <div class="chat-intro-field">
+                <label for="chatJobPosting">Job Posting (optional)</label>
+                <textarea id="chatJobPosting" placeholder="Paste a job description for a fit assessment..."></textarea>
+            </div>
+            <button class="chat-start-btn" id="chatStartBtn" disabled>
+                <i class="fas fa-comments"></i> Start Chatting
+            </button>
+        </div>
+
+        <!-- Chat area (hidden until started) -->
+        <div class="chat-messages" id="chatMessages" style="display: none;"></div>
+        <div class="chat-input-area" id="chatInputArea" style="display: none;">
+            <input type="text" class="chat-input" id="chatInput" placeholder="Ask about Jason's experience..." />
+            <button class="chat-send-btn" id="chatSendBtn" aria-label="Send message">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+
+    <script src="chat.js?v=1"></script>
 </body>
 </html>

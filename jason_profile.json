@@ -1,0 +1,113 @@
+{
+  "name": "Jason Mitchell",
+  "title": "Software Engineer",
+  "email": "jasonmitchell096@gmail.com",
+  "github": "https://github.com/jason0960",
+  "linkedin": "https://www.linkedin.com/in/jason-mitchell-b39a4418b",
+  "portfolio": "https://jason0960.github.io/MitchellSoftware/",
+
+  "summary": "Software Engineer at The Home Depot working in Inventory Planning & Replenishment (IPR) HealthTech Systems. I went from a coding bootcamp to building enterprise systems at scale. I specialize in Java, React, and Python, and I'm passionate about building things that work well and solving real problems.",
+
+  "career_timeline": [
+    {
+      "role": "OMOW Software Engineering Bootcamp",
+      "company": "The Home Depot",
+      "type": "Bootcamp",
+      "description": "Intensive full-stack engineering program covering modern software development practices, enterprise architecture patterns, and collaborative engineering workflows."
+    },
+    {
+      "role": "Software Engineering Intern",
+      "company": "The Home Depot",
+      "type": "Internship",
+      "description": "Applied engineering fundamentals in a production environment, gaining hands-on experience with enterprise Java and React applications supporting supply chain operations."
+    },
+    {
+      "role": "Software Engineer",
+      "company": "The Home Depot — IPR HealthTech Systems",
+      "type": "Full-Time",
+      "description": "Contributing to enterprise applications within Inventory Planning & Replenishment, delivering production features, bug fixes, deployment workflows, and monitoring solutions across backend and frontend systems."
+    }
+  ],
+
+  "key_contributions": [
+    {
+      "area": "Enterprise Applications",
+      "detail": "Contributed to enterprise Java and React applications supporting import container and replenishment workflows that power Home Depot's supply chain.",
+      "technologies": ["Java", "React", "REST APIs"]
+    },
+    {
+      "area": "PDF Automation Solution",
+      "detail": "Implemented a Python-based PDF generation solution to automate and standardize production container documentation, replacing manual processes.",
+      "technologies": ["Python", "Automation", "PDF Generation"]
+    },
+    {
+      "area": "Deployment Workflows",
+      "detail": "Designed and created multiple production deployment workflows for legacy applications, improving release reliability and repeatability across the team.",
+      "technologies": ["CI/CD", "DevOps", "Legacy Systems"]
+    },
+    {
+      "area": "Monitoring & Alerting",
+      "detail": "Designed and implemented application monitoring using Grafana, building dashboards to surface system health, failures, and operational metrics.",
+      "technologies": ["Grafana", "Dashboards", "Observability"]
+    },
+    {
+      "area": "Production Bug Fixes",
+      "detail": "Delivered critical production bug fixes across backend and frontend systems in live environments, ensuring minimal downtime and service reliability.",
+      "technologies": ["Debugging", "Backend", "Frontend"]
+    },
+    {
+      "area": "KTLO & Incident Response",
+      "detail": "Supported keep-the-lights-on operations including incident triage, defect resolution, and deployment support in an Agile cross-functional environment.",
+      "technologies": ["Incident Triage", "Agile", "Collaboration"]
+    }
+  ],
+
+  "technical_skills": {
+    "backend": ["Java", "Spring Boot", "Python", "RESTful APIs", "Microservices", "Enterprise Architecture"],
+    "frontend": ["React", "JavaScript", "TypeScript", "HTML5", "CSS3", "Responsive Design", "UI Component Libraries"],
+    "devops": ["Deployment Pipelines", "Git", "GitHub", "Build Automation", "Release Management", "Legacy System Migration"],
+    "observability": ["Grafana Dashboards", "Application Monitoring", "Alerting Systems", "Prometheus"],
+    "other": ["Agile", "Scrum", "Incident Management", "Three.js", "ReportLab"]
+  },
+
+  "portfolio_projects": [
+    {
+      "name": "Portfolio Website",
+      "description": "Dark terminal-themed portfolio with creative/professional mode toggle, state-driven architecture with custom AppState manager, no frameworks — pure vanilla JS. Features cursor glow effects, typing animations, whiteboard annotation overlay, and integrated analytics dashboard with live Prometheus metrics.",
+      "technologies": ["HTML", "CSS", "JavaScript", "EmailJS"]
+    },
+    {
+      "name": "Lumber Yard Restock Planner",
+      "description": "Interactive 3D lumber yard demo with 20 product bunks. Users browse and flag bunks for restocking, then generate a full PDF delivery order. Features 3D-rendered flatbed truck diagram showing bin-packed loading, yard health bar chart, and order summary. Built with Three.js r128 with individual board layers, sticker separators, and banding straps.",
+      "technologies": ["Three.js", "Python", "Flask", "ReportLab", "Prometheus"]
+    },
+    {
+      "name": "AI Recruiter Chatbot",
+      "description": "An AI-powered chatbot integrated into my portfolio that lets recruiters ask questions about my experience and paste job postings for honest fit assessments. Uses a pre-trained LLM with prompt engineering — demonstrating practical AI integration skills.",
+      "technologies": ["OpenAI API", "Python", "Flask", "SQLite", "JavaScript"]
+    }
+  ],
+
+  "honest_self_assessment": {
+    "strengths": [
+      "Strong enterprise Java and React experience in a Fortune 500 production environment",
+      "Comfortable across the full stack — frontend, backend, DevOps, and observability",
+      "Self-taught drive — went from bootcamp to shipping production features",
+      "Good at automating manual processes (PDF generation, deployment workflows)",
+      "Solid debugging skills in production environments",
+      "Experience with monitoring and observability (Grafana, Prometheus)",
+      "Creative problem solver — built 3D visualizations and interactive demos as portfolio pieces"
+    ],
+    "areas_for_growth": [
+      "Still growing in system design for large-scale distributed architectures",
+      "Cloud infrastructure (AWS/GCP/Azure) — have exposure but not deep hands-on yet",
+      "Kubernetes and container orchestration — aware of concepts but haven't worked with it in production",
+      "Database design at scale — have worked with databases but not as a primary focus",
+      "AI/ML — integrating APIs and prompt engineering, but not building models from scratch"
+    ]
+  },
+
+  "what_im_looking_for": "I'm looking for a software engineering role where I can keep growing technically, work on meaningful problems, and contribute to a team that values quality and collaboration. I'm open to backend, frontend, or full-stack roles. I thrive in environments where I can learn from senior engineers and take on increasing responsibility.",
+
+  "personality_notes": "I'm a hard worker who takes pride in what I build. I went the non-traditional route — bootcamp instead of a CS degree — and I've worked to prove myself every step of the way. I like going deep on problems and building things that are polished, not just functional. Outside of work, I'm always tinkering with side projects to learn new technologies."
+}

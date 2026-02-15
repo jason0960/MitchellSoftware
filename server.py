@@ -8,8 +8,11 @@ import base64
 import json
 import time
 import os
+import sqlite3
+import uuid
 import psutil
 from datetime import datetime
+from openai import OpenAI
 
 from flask import Flask, request, send_file, jsonify, Response
 from flask_cors import CORS
@@ -25,7 +28,7 @@ from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
 from prometheus_client import Counter, Gauge, Histogram, generate_latest, CONTENT_TYPE_LATEST
 
 app = Flask(__name__, static_folder='.', static_url_path='')
-CORS(app, resources={r"/api/*": {"origins": "*"}, r"/metrics": {"origins": "*"}})
+CORS(app, resources={r"/api/*": {"origins": "*"}, r"/metrics": {"origins": "*"}, r"/admin/*": {"origins": "*"}})
 
 SERVER_START_TIME = time.time()
 
@@ -49,6 +52,10 @@ CONTACT_SUBMISSIONS = Counter(
 RESUME_ENJOYED = Counter(
     'resume_enjoyed_votes_total',
     'Total \"Enjoyed this resume\" votes'
+)
+CHAT_MESSAGES = Counter(
+    'chat_messages_total',
+    'Total AI chatbot messages received'
 )
 REQUEST_COUNT = Counter(
     'http_requests_total',
@@ -86,6 +93,88 @@ REQUEST_LATENCY = Histogram(
 # In-memory session tracking (visitor IPs seen in last 15 min)
 _visitor_log = {}  # { ip: last_seen_timestamp }
 SESSION_WINDOW = 900  # 15 minutes
+
+# ─── SQLite Chat Log Database ──────────────────────────────────
+CHAT_DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'chat_logs.db')
+
+
+def _init_chat_db():
+    """Create the chat log tables if they don't exist."""
+    conn = sqlite3.connect(CHAT_DB_PATH)
+    c = conn.cursor()
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS conversations (
+            id TEXT PRIMARY KEY,
+            recruiter_name TEXT NOT NULL,
+            job_posting TEXT,
+            started_at TEXT NOT NULL,
+            last_message_at TEXT NOT NULL,
+            ip_address TEXT,
+            message_count INTEGER DEFAULT 0
+        )
+    ''')
+    c.execute('''
+        CREATE TABLE IF NOT EXISTS messages (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            conversation_id TEXT NOT NULL,
+            role TEXT NOT NULL,
+            content TEXT NOT NULL,
+            timestamp TEXT NOT NULL,
+            FOREIGN KEY (conversation_id) REFERENCES conversations(id)
+        )
+    ''')
+    conn.commit()
+    conn.close()
+
+
+_init_chat_db()
+
+
+# ─── AI Chatbot System Prompt ──────────────────────────────────
+def _load_system_prompt():
+    """Load Jason's profile data and build the system prompt."""
+    profile_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'jason_profile.json')
+    with open(profile_path, 'r') as f:
+        profile = json.load(f)
+
+    return f"""You are Jason Mitchell's AI representative on his portfolio website. Your job is to answer questions from recruiters and hiring managers about Jason's experience, skills, and background.
+
+IMPORTANT RULES:
+- Be honest and transparent. Never exaggerate or fabricate experience.
+- If asked about something Jason doesn't have experience with, say so clearly but frame it constructively (e.g., "Jason hasn't worked with Kubernetes in production yet, but he's familiar with containerization concepts and is eager to learn.").
+- Be conversational, professional, and warm — represent Jason well.
+- Keep responses concise but thorough. Aim for 2-4 sentences unless more detail is requested.
+- If a recruiter pastes a job posting, give an honest assessment of fit — highlight matching skills AND gaps.
+- You may refer to Jason in the third person ("Jason has...") or first person ("I have...") — match whatever feels natural in context.
+- Never make up specific dates, numbers, or claims not in the profile data.
+- If asked something personal or inappropriate, politely decline.
+
+JASON'S PROFILE DATA:
+{json.dumps(profile, indent=2)}
+
+Remember: honesty is Jason's differentiator. Recruiters appreciate candor over sales pitches."""
+
+
+# Cache the system prompt at startup
+try:
+    SYSTEM_PROMPT = _load_system_prompt()
+except Exception as e:
+    print(f'Warning: Could not load profile for AI chatbot: {e}')
+    SYSTEM_PROMPT = 'You are Jason Mitchell\'s AI assistant. Answer questions about his software engineering experience honestly.'
+
+# OpenAI client (initialized lazily)
+_openai_client = None
+
+
+def _get_openai_client():
+    """Get or create the OpenAI client."""
+    global _openai_client
+    if _openai_client is None:
+        api_key = os.environ.get('OPENAI_API_KEY')
+        if not api_key:
+            raise ValueError('OPENAI_API_KEY environment variable is not set')
+        _openai_client = OpenAI(api_key=api_key)
+    return _openai_client
 
 
 def _update_system_metrics():
@@ -407,6 +496,182 @@ def generate_pdf():
         as_attachment=False,
         download_name=f'restock-order-{now.strftime("%Y%m%d")}.pdf',
     )
+
+
+# ─── AI Chatbot Endpoints ──────────────────────────────────────
+
+@app.route('/api/chat', methods=['POST'])
+def chat():
+    """Handle a chat message from a recruiter."""
+    data = request.get_json(silent=True) or {}
+    recruiter_name = data.get('recruiter_name', '').strip()
+    message = data.get('message', '').strip()
+    conversation_id = data.get('conversation_id', '')
+    job_posting = data.get('job_posting', '')
+
+    if not recruiter_name:
+        return jsonify({'error': 'Please provide your name.'}), 400
+    if not message:
+        return jsonify({'error': 'Please provide a message.'}), 400
+
+    now = datetime.utcnow().isoformat()
+    ip = request.remote_addr or 'unknown'
+
+    conn = sqlite3.connect(CHAT_DB_PATH)
+    c = conn.cursor()
+
+    # Create or retrieve conversation
+    if not conversation_id:
+        conversation_id = str(uuid.uuid4())
+        c.execute(
+            'INSERT INTO conversations (id, recruiter_name, job_posting, started_at, last_message_at, ip_address, message_count) VALUES (?, ?, ?, ?, ?, ?, 0)',
+            (conversation_id, recruiter_name, job_posting, now, now, ip)
+        )
+    else:
+        # Update existing conversation
+        c.execute('UPDATE conversations SET last_message_at = ? WHERE id = ?', (now, conversation_id))
+        # Update job posting if provided and conversation exists
+        if job_posting:
+            c.execute('UPDATE conversations SET job_posting = ? WHERE id = ?', (job_posting, conversation_id))
+
+    # Save user message
+    c.execute(
+        'INSERT INTO messages (conversation_id, role, content, timestamp) VALUES (?, ?, ?, ?)',
+        (conversation_id, 'user', message, now)
+    )
+    c.execute('UPDATE conversations SET message_count = message_count + 1 WHERE id = ?', (conversation_id,))
+    conn.commit()
+
+    CHAT_MESSAGES.inc()
+
+    # Build conversation history for context
+    c.execute(
+        'SELECT role, content FROM messages WHERE conversation_id = ? ORDER BY id',
+        (conversation_id,)
+    )
+    history = [{'role': row[0], 'content': row[1]} for row in c.fetchall()]
+
+    # Build messages for LLM
+    llm_messages = [{'role': 'system', 'content': SYSTEM_PROMPT}]
+
+    # Inject job posting context if present
+    if job_posting:
+        llm_messages.append({
+            'role': 'system',
+            'content': f'The recruiter has shared this job posting for fit assessment:\n\n{job_posting}'
+        })
+
+    # Add recruiter name context
+    llm_messages.append({
+        'role': 'system',
+        'content': f'The recruiter\'s name is {recruiter_name}. You may address them by name occasionally.'
+    })
+
+    llm_messages.extend([
+        {'role': 'user' if m['role'] == 'user' else 'assistant', 'content': m['content']}
+        for m in history
+    ])
+
+    # Call the LLM
+    try:
+        client = _get_openai_client()
+        response = client.chat.completions.create(
+            model=os.environ.get('OPENAI_MODEL', 'gpt-4o-mini'),
+            messages=llm_messages,
+            max_tokens=500,
+            temperature=0.7,
+        )
+        reply = response.choices[0].message.content.strip()
+    except ValueError as e:
+        conn.close()
+        return jsonify({'error': str(e)}), 503
+    except Exception as e:
+        conn.close()
+        return jsonify({'error': f'AI service temporarily unavailable: {str(e)}'}), 503
+
+    # Save assistant reply
+    reply_time = datetime.utcnow().isoformat()
+    c.execute(
+        'INSERT INTO messages (conversation_id, role, content, timestamp) VALUES (?, ?, ?, ?)',
+        (conversation_id, 'assistant', reply, reply_time)
+    )
+    c.execute('UPDATE conversations SET message_count = message_count + 1, last_message_at = ? WHERE id = ?',
+              (reply_time, conversation_id))
+    conn.commit()
+    conn.close()
+
+    return jsonify({
+        'reply': reply,
+        'conversation_id': conversation_id,
+    })
+
+
+# ─── Admin: View Chat Logs (token-protected) ──────────────────
+
+@app.route('/admin/chat-logs')
+def admin_chat_logs():
+    """View all chat logs. Protected by ADMIN_TOKEN env var."""
+    token = request.args.get('token', '')
+    expected = os.environ.get('ADMIN_TOKEN', '')
+
+    if not expected or token != expected:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    conn = sqlite3.connect(CHAT_DB_PATH)
+    conn.row_factory = sqlite3.Row
+    c = conn.cursor()
+
+    c.execute('SELECT * FROM conversations ORDER BY last_message_at DESC')
+    conversations = []
+    for row in c.fetchall():
+        conv = dict(row)
+        c.execute(
+            'SELECT role, content, timestamp FROM messages WHERE conversation_id = ? ORDER BY id',
+            (conv['id'],)
+        )
+        conv['messages'] = [dict(m) for m in c.fetchall()]
+        conversations.append(conv)
+
+    conn.close()
+
+    return jsonify({
+        'total_conversations': len(conversations),
+        'conversations': conversations,
+    })
+
+
+@app.route('/admin/chat-stats')
+def admin_chat_stats():
+    """Quick stats overview. Protected by ADMIN_TOKEN."""
+    token = request.args.get('token', '')
+    expected = os.environ.get('ADMIN_TOKEN', '')
+
+    if not expected or token != expected:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    conn = sqlite3.connect(CHAT_DB_PATH)
+    c = conn.cursor()
+
+    c.execute('SELECT COUNT(*) FROM conversations')
+    total_convos = c.fetchone()[0]
+
+    c.execute('SELECT COUNT(*) FROM messages')
+    total_messages = c.fetchone()[0]
+
+    c.execute('SELECT COUNT(*) FROM messages WHERE role = "user"')
+    total_user_messages = c.fetchone()[0]
+
+    c.execute('SELECT recruiter_name, COUNT(*) as msg_count, started_at FROM conversations GROUP BY recruiter_name ORDER BY started_at DESC LIMIT 20')
+    recent_recruiters = [{'name': r[0], 'conversations': r[1], 'first_seen': r[2]} for r in c.fetchall()]
+
+    conn.close()
+
+    return jsonify({
+        'total_conversations': total_convos,
+        'total_messages': total_messages,
+        'total_user_messages': total_user_messages,
+        'recent_recruiters': recent_recruiters,
+    })
 
 
 @app.route('/health')
