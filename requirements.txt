@@ -3,3 +3,4 @@ flask-cors>=4.0
 reportlab>=4.0
 prometheus-client>=0.20
 psutil>=5.9
+openai>=1.0
