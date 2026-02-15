@@ -336,7 +336,7 @@ def get_stats():
 
 # ─── Routes: PDF Generation ───────────────────────────────────
 
-HD_ORANGE = colors.HexColor('#F96302')
+ACCENT = colors.HexColor('#F96302')
 DARK_BG   = colors.HexColor('#0a0e17')
 CARD_BG   = colors.HexColor('#1a2233')
 BORDER    = colors.HexColor('#1e293b')
@@ -384,7 +384,7 @@ def generate_pdf():
     styles.add(ParagraphStyle(
         'HDTitle', parent=styles['Title'],
         fontName='Helvetica-Bold', fontSize=20,
-        textColor=HD_ORANGE, spaceAfter=4,
+        textColor=ACCENT, spaceAfter=4,
     ))
     styles.add(ParagraphStyle(
         'HDSub', parent=styles['Normal'],
@@ -394,7 +394,7 @@ def generate_pdf():
     styles.add(ParagraphStyle(
         'SectionHead', parent=styles['Heading2'],
         fontName='Helvetica-Bold', fontSize=13,
-        textColor=HD_ORANGE, spaceBefore=14, spaceAfter=6,
+        textColor=ACCENT, spaceBefore=14, spaceAfter=6,
     ))
     styles.add(ParagraphStyle(
         'CellText', parent=styles['Normal'],
@@ -423,7 +423,7 @@ def generate_pdf():
         styles['HDSub'],
     ))
     elems.append(HRFlowable(
-        width='100%', thickness=2, color=HD_ORANGE,
+        width='100%', thickness=2, color=ACCENT,
         spaceAfter=10, spaceBefore=2,
     ))
 
@@ -436,7 +436,7 @@ def generate_pdf():
     summary_table = Table(summary_data, colWidths=[doc.width / 4] * 4)
     summary_table.setStyle(TableStyle([
         ('SPAN', (0, 0), (-1, 0)),
-        ('BACKGROUND', (0, 0), (-1, 0), HD_ORANGE),
+        ('BACKGROUND', (0, 0), (-1, 0), ACCENT),
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
         ('FONTSIZE', (0, 0), (-1, 0), 11),
@@ -447,9 +447,9 @@ def generate_pdf():
         ('TEXTCOLOR', (0, 1), (-1, 1), colors.HexColor('#666666')),
         ('FONTNAME', (0, 2), (-1, 2), 'Helvetica-Bold'),
         ('FONTSIZE', (0, 2), (-1, 2), 14),
-        ('TEXTCOLOR', (0, 2), (-1, 2), HD_ORANGE),
+        ('TEXTCOLOR', (0, 2), (-1, 2), ACCENT),
         ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-        ('BOX', (0, 0), (-1, -1), 1, HD_ORANGE),
+        ('BOX', (0, 0), (-1, -1), 1, ACCENT),
         ('INNERGRID', (0, 1), (-1, -1), 0.5, colors.HexColor('#dddddd')),
         ('TOPPADDING', (0, 2), (-1, 2), 8),
         ('BOTTOMPADDING', (0, 2), (-1, 2), 8),
@@ -487,7 +487,7 @@ def generate_pdf():
                   0.65*inch, 0.65*inch, 0.7*inch, 0.85*inch]
     t = Table(table_data, colWidths=col_widths, repeatRows=1)
     style_cmds = [
-        ('BACKGROUND', (0, 0), (-1, 0), HD_ORANGE),
+        ('BACKGROUND', (0, 0), (-1, 0), ACCENT),
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
         ('FONTSIZE', (0, 0), (-1, 0), 8),
@@ -497,14 +497,14 @@ def generate_pdf():
         ('ALIGN', (1, 1), (1, -1), 'LEFT'),
         ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
         ('INNERGRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#cccccc')),
-        ('BOX', (0, 0), (-1, -1), 1, HD_ORANGE),
+        ('BOX', (0, 0), (-1, -1), 1, ACCENT),
         ('ROWBACKGROUNDS', (0, 1), (-1, -2), [colors.white, colors.HexColor('#fafafa')]),
         ('TOPPADDING', (0, 0), (-1, -1), 4),
         ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
         ('BACKGROUND', (0, -1), (-1, -1), colors.HexColor('#fff3e0')),
         ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
-        ('TEXTCOLOR', (0, -1), (-1, -1), HD_ORANGE),
-        ('LINEABOVE', (0, -1), (-1, -1), 2, HD_ORANGE),
+        ('TEXTCOLOR', (0, -1), (-1, -1), ACCENT),
+        ('LINEABOVE', (0, -1), (-1, -1), 2, ACCENT),
     ]
 
     for i, item in enumerate(items, 1):
