@@ -238,9 +238,9 @@
                 // --- FIXED corner ---
                 case 'cursorGlow':
                     ann.style.position = 'fixed';
-                    ann.style.right = '2rem';
+                    ann.style.left = '2rem';
                     ann.style.bottom = '3rem';
-                    ann.style.left = 'auto';
+                    ann.style.right = 'auto';
                     ann.style.top = 'auto';
                     return;
             }
