@@ -96,7 +96,7 @@ python -m pytest tests/ -v
 
 ## Deployment
 
-Deployed on **Render.com** as a single web service. See [DEPLOYMENT.md](DEPLOYMENT.md) for details.
+Deployed on **Render.com** as a single web service. 
 
 ## Tech Stack
 
